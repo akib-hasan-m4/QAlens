@@ -1,0 +1,7 @@
+mock_docs/
+target/
+.env
+.idea/
+*.iml
+.vscode/
+.DS_Store
