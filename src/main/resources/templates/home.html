@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/base :: head('Home')}"></head>
+<body>
+<main>
+    <div class="head">
+        <div>
+            <div class="crumbs" th:text="${user.orgName}">Acme Corp</div>
+            <h1>Welcome, <span id="display-name" th:text="${user.displayName}">User</span></h1>
+            <div class="sub">Authentication works. Projects arrive in M2.</div>
+        </div>
+        <form method="post" th:action="@{/logout}">
+            <button class="btn" type="submit">Sign out</button>
+        </form>
+    </div>
+    <div class="card">
+        <h3>Session</h3>
+        <table>
+            <tr><th>Email</th><td id="user-email" th:text="${user.email}"></td></tr>
+            <tr><th>Organisation</th><td th:text="${user.orgSlug}"></td></tr>
+            <tr><th>Authorities</th><td th:text="${#authentication.authorities}"></td></tr>
+        </table>
+    </div>
+</main>
+</body>
+</html>
