@@ -2,7 +2,7 @@ spring:
   application:
     name: qalens
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/qalens}
+    url: ${DB_URL:jdbc:postgresql://localhost:5433/qalens}
     username: ${DB_USER:qalens}
     password: ${DB_PASSWORD:qalens}
   jpa:
