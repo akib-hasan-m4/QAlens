@@ -10,6 +10,7 @@ JDK 21, Docker (Compose v2). Maven is provided by the wrapper.
 ```bash
 cp .env.example .env
 docker compose up -d db          # Postgres+pgvector on host port 5433
+docker compose up -d pgadmin    # optional UI at http://localhost:5050 (server "QAlens" pre-registered)
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
 curl localhost:8080/actuator/health
 ```
