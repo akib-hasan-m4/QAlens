@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/base :: head('Error')}"></head>
+<body>
+<div class="login-wrap">
+    <div class="card login-card">
+        <div class="logo">QA<span>lens</span></div>
+        <h1 th:text="${status} ?: 'Error'">404</h1>
+        <p class="sub" id="error-message">Something went wrong, or the page you asked for does not exist.</p>
+        <a class="btn p" th:href="@{/}">Back to home</a>
+    </div>
+</div>
+</body>
+</html>

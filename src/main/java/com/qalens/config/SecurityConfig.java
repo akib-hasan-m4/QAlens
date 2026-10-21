@@ -9,11 +9,18 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    static final String SESSION_COOKIE = "QALENS_SESSION";
+
+    private static final String CSP = "default-src 'self'; script-src 'self'; style-src 'self'; "
+            + "img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'; "
+            + "frame-ancestors 'none'";
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -31,7 +38,14 @@ public class SecurityConfig {
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout")
-                        .deleteCookies("JSESSIONID"));
+                        .invalidateHttpSession(true)
+                        .deleteCookies(SESSION_COOKIE))
+                .sessionManagement(sm -> sm.sessionFixation(fix -> fix.changeSessionId()))
+                .headers(h -> h
+                        .contentSecurityPolicy(csp -> csp.policyDirectives(CSP))
+                        .frameOptions(fo -> fo.deny())
+                        .referrerPolicy(r -> r.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.SAME_ORIGIN))
+                        .permissionsPolicyHeader(pp -> pp.policy("camera=(), microphone=(), geolocation=()")));
         return http.build();
     }
 
