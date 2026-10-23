@@ -26,6 +26,7 @@ public class QalensUserDetailsService implements UserDetailsService {
                 user.getId(),
                 user.getEmail(),
                 user.getDisplayName(),
+                user.getOrg().getId(),
                 user.getOrg().getSlug(),
                 user.getOrg().getName(),
                 user.getPasswordHash(),

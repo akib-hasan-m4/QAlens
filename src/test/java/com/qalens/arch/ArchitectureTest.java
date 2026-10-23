@@ -2,10 +2,14 @@ package com.qalens.arch;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
+import com.qalens.repository.ProjectRepository;
+import com.tngtech.archunit.base.DescribedPredicate;
+import com.tngtech.archunit.core.domain.JavaMethodCall;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
+import java.util.Set;
 
 @AnalyzeClasses(packages = "com.qalens", importOptions = ImportOption.DoNotIncludeTests.class)
 class ArchitectureTest {
@@ -22,5 +26,17 @@ class ArchitectureTest {
             .should().dependOnClassesThat().resideInAPackage("..ai..")
             .allowEmptyShould(true);
 
-    // Tenant rule (no unconstrained findById on tenant-scoped repositories) is added with M1 once entities exist.
+    private static final Set<String> TENANT_SCOPED_REPOSITORIES = Set.of(ProjectRepository.class.getName());
+
+    private static final Set<String> UNCONSTRAINED_FINDERS =
+            Set.of("findById", "getById", "getReferenceById", "findAllById", "findAll", "existsById", "deleteById");
+
+    /** Inherited finders ignore the organisation; tenant-scoped data must be reached through org-aware finders. */
+    @ArchTest
+    static final ArchRule no_unconstrained_finders_on_tenant_scoped_repositories = noClasses()
+            .that().resideOutsideOfPackage("..repository..")
+            .should().callMethodWhere(DescribedPredicate.describe(
+                    "it is an unconstrained finder on a tenant-scoped repository",
+                    (JavaMethodCall call) -> TENANT_SCOPED_REPOSITORIES.contains(call.getTargetOwner().getFullName())
+                            && UNCONSTRAINED_FINDERS.contains(call.getTarget().getName())));
 }
