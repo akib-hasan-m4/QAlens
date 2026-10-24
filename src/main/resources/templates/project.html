@@ -10,7 +10,8 @@
     </div>
     <div class="head">
         <div>
-            <h1 id="project-name" th:text="${project.name}">Project</h1>
+            <h1 id="project-name"><span th:text="${project.name}">Project</span>
+                <span class="badge" th:if="${project.archived}">Archived</span></h1>
             <div class="sub" th:text="${project.description}">Description</div>
         </div>
         <a class="btn" th:href="@{/o/{s}/projects/{id}/settings(s=${slug},id=${project.id})}">Settings</a>

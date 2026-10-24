@@ -4,6 +4,7 @@ import com.qalens.common.ResourceNotFoundException;
 import com.qalens.repository.ProjectRepository;
 import com.qalens.repository.UserProjectRoleRepository;
 import java.util.Arrays;
+import java.util.List;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -29,6 +30,15 @@ public class ProjectAccess {
         projects.findByIdAndOrgId(projectId, user.getOrgId()).orElseThrow(ResourceNotFoundException::new);
         String role = memberships.findRoleName(user.getId(), projectId).orElseThrow(ResourceNotFoundException::new);
         return Arrays.asList(allowedRoles).contains(role);
+    }
+
+    /**
+     * Roles are per project, so "may create a project" means holding ADMIN or QA_LEAD on any project of the
+     * caller's organisation. Insufficient rights answer 403: the caller is already inside their own organisation.
+     */
+    public boolean canCreateProject() {
+        QalensUserDetails user = currentUser();
+        return memberships.holdsRoleInOrg(user.getId(), user.getOrgId(), List.of("ADMIN", "QA_LEAD"));
     }
 
     static QalensUserDetails currentUser() {

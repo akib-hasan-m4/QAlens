@@ -16,6 +16,35 @@
             <tr><th>Your role</th><td th:text="${project.myRole}"></td></tr>
         </table>
     </div>
+    <div class="card">
+        <h3>Details</h3>
+        <form method="post" th:action="@{/o/{s}/projects/{id}/settings(s=${slug},id=${project.id})}" th:object="${form}">
+            <div class="field">
+                <label for="name">Name</label>
+                <input class="input" id="name" type="text" th:field="*{name}" maxlength="200" required>
+                <div class="alert err" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Invalid name</div>
+            </div>
+            <div class="field">
+                <label for="description">Description</label>
+                <textarea class="input" id="description" th:field="*{description}" maxlength="2000" rows="3"></textarea>
+                <div class="alert err" th:if="${#fields.hasErrors('description')}" th:errors="*{description}">Invalid</div>
+            </div>
+            <button class="btn p" type="submit">Save</button>
+        </form>
+    </div>
+    <div class="card">
+        <h3>Archive</h3>
+        <form th:unless="${project.archived}" method="post"
+              th:action="@{/o/{s}/projects/{id}/archive(s=${slug},id=${project.id})}">
+            <p class="sub">An archived project stays readable but is marked as closed.</p>
+            <button class="btn" type="submit">Archive project</button>
+        </form>
+        <form th:if="${project.archived}" method="post"
+              th:action="@{/o/{s}/projects/{id}/restore(s=${slug},id=${project.id})}">
+            <p class="sub">This project is archived.</p>
+            <button class="btn" type="submit">Restore project</button>
+        </form>
+    </div>
 </main>
 </body>
 </html>

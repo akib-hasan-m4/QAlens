@@ -70,4 +70,13 @@ public class Project {
     public boolean isArchived() {
         return archived;
     }
+
+    public void edit(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
+
+    public void setArchived(boolean archived) {
+        this.archived = archived;
+    }
 }

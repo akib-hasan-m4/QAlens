@@ -12,10 +12,28 @@
             <tr><th>Key</th><th>Name</th><th>Your role</th></tr>
             <tr th:each="p : ${projects}">
                 <td class="id" th:text="${p.key}">DEMO</td>
-                <td><a th:href="@{/o/{s}/projects/{id}(s=${slug},id=${p.id})}" th:text="${p.name}">Name</a></td>
+                <td><a th:href="@{/o/{s}/projects/{id}(s=${slug},id=${p.id})}" th:text="${p.name}">Name</a>
+                    <span class="badge" th:if="${p.archived}">Archived</span></td>
                 <td><span class="badge info" th:text="${p.myRole}">TESTER</span></td>
             </tr>
         </table>
+    </div>
+    <div class="card" th:if="${mayCreate}">
+        <h3>New project</h3>
+        <form method="post" th:action="@{/o/{s}/projects(s=${slug})}" th:object="${form}">
+            <div class="field">
+                <label for="name">Name</label>
+                <input class="input" id="name" type="text" th:field="*{name}" maxlength="200" required>
+                <div class="alert err" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Invalid name</div>
+            </div>
+            <div class="field">
+                <label for="description">Description</label>
+                <textarea class="input" id="description" th:field="*{description}" maxlength="2000" rows="3"></textarea>
+                <div class="alert err" th:if="${#fields.hasErrors('description')}" th:errors="*{description}">Invalid</div>
+            </div>
+            <p class="sub">The project key is generated from the name.</p>
+            <button class="btn p" type="submit">Create project</button>
+        </form>
     </div>
 </main>
 </body>
