@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/base :: head('Requirements')}"></head>
+<body>
+<main>
+    <div class="crumbs">
+        <a th:href="@{/o/{s}/projects(s=${slug})}">Projects</a> /
+        <a th:href="@{/o/{s}/projects/{p}(s=${slug},p=${projectId})}">Project</a> / Requirements
+    </div>
+    <h1>Requirements</h1>
+    <div class="card">
+        <form method="get" th:action="@{/o/{s}/projects/{p}/requirements(s=${slug},p=${projectId})}">
+            <div class="field">
+                <label for="q">Search title or key</label>
+                <input class="input" id="q" name="q" type="search" maxlength="100" th:value="${q}">
+            </div>
+            <div class="field">
+                <label for="sort">Sort by</label>
+                <select id="sort" name="sort">
+                    <option value="created" th:selected="${sort == 'created' or sort == ''}">Newest first</option>
+                    <option value="title" th:selected="${sort == 'title'}">Title</option>
+                    <option value="status" th:selected="${sort == 'status'}">Status</option>
+                </select>
+            </div>
+            <button class="btn" type="submit">Apply</button>
+        </form>
+    </div>
+    <div class="card">
+        <p th:if="${#lists.isEmpty(requirements)}">No requirements found.</p>
+        <table th:unless="${#lists.isEmpty(requirements)}">
+            <tr><th>Key</th><th>Title</th><th>Status</th><th>Priority</th></tr>
+            <tr th:each="r : ${requirements}">
+                <td class="id" th:text="${r.extKey}">REQ-1</td>
+                <td><a th:href="@{/o/{s}/projects/{p}/requirements/{id}(s=${slug},p=${projectId},id=${r.id})}"
+                       th:text="${r.title}">Title</a></td>
+                <td><span class="badge info" th:text="${r.status}">DRAFT</span></td>
+                <td th:text="${r.priority}">MEDIUM</td>
+            </tr>
+        </table>
+    </div>
+    <div class="card" th:if="${mayEdit}">
+        <h3>New requirement</h3>
+        <form method="post" th:action="@{/o/{s}/projects/{p}/requirements(s=${slug},p=${projectId})}"
+              th:object="${form}">
+            <div th:replace="~{requirement-fields :: fields}"></div>
+            <button class="btn p" type="submit">Create requirement</button>
+        </form>
+    </div>
+</main>
+</body>
+</html>
