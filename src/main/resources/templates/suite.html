@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{layout/base :: head('Suite')}"></head>
-<body>
+<body th:replace="~{layout/base :: shell(~{::main}, 'suites')}">
 <main>
     <div class="crumbs">
-        <a th:href="@{/o/{s}/projects/{p}/suites(s=${slug},p=${projectId})}">Suites</a> /
+        <a th:href="@{/o/{s}/projects/{p}(s=${slug},p=${projectId})}" th:text="${shell.project.name}">Project</a> /
+        <a th:href="@{/o/{s}/projects/{p}/suites(s=${slug},p=${projectId})}">Test suites</a> /
         <span th:text="${suite.name}">Suite</span>
     </div>
     <h1 id="suite-name" th:text="${suite.name}">Suite</h1>
     <div class="card" th:if="${mayEdit}">
-        <form method="post" th:action="@{/o/{s}/projects/{p}/suites/{id}/rename(s=${slug},p=${projectId},id=${suite.id})}"
+        <form class="narrow" method="post" th:action="@{/o/{s}/projects/{p}/suites/{id}/rename(s=${slug},p=${projectId},id=${suite.id})}"
               th:object="${renameForm}">
             <div class="field">
                 <label for="name">Rename suite</label>

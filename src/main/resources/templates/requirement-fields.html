@@ -3,33 +3,35 @@
 <body>
 <div th:fragment="fields">
     <div class="field">
-        <label for="extKey">Key (optional)</label>
-        <input class="input" id="extKey" type="text" th:field="*{extKey}" maxlength="50">
-        <div class="alert err" th:if="${#fields.hasErrors('extKey')}" th:errors="*{extKey}">Invalid</div>
-    </div>
-    <div class="field">
         <label for="title">Title</label>
         <input class="input" id="title" type="text" th:field="*{title}" maxlength="500" required>
         <div class="alert err" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">Invalid</div>
+    </div>
+    <div class="row2">
+        <div class="field">
+            <label for="extKey">Key (optional)</label>
+            <input class="input" id="extKey" type="text" th:field="*{extKey}" maxlength="50">
+            <div class="alert err" th:if="${#fields.hasErrors('extKey')}" th:errors="*{extKey}">Invalid</div>
+        </div>
+        <div class="field">
+            <label for="status">Status</label>
+            <select id="status" th:field="*{status}">
+                <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}">DRAFT</option>
+            </select>
+            <div class="alert err" th:if="${#fields.hasErrors('status')}" th:errors="*{status}">Invalid</div>
+        </div>
+        <div class="field">
+            <label for="priority">Priority</label>
+            <select id="priority" th:field="*{priority}">
+                <option th:each="p : ${priorities}" th:value="${p}" th:text="${p}">MEDIUM</option>
+            </select>
+            <div class="alert err" th:if="${#fields.hasErrors('priority')}" th:errors="*{priority}">Invalid</div>
+        </div>
     </div>
     <div class="field">
         <label for="body">Description</label>
         <textarea class="input" id="body" th:field="*{body}" maxlength="10000" rows="6"></textarea>
         <div class="alert err" th:if="${#fields.hasErrors('body')}" th:errors="*{body}">Invalid</div>
-    </div>
-    <div class="field">
-        <label for="status">Status</label>
-        <select id="status" th:field="*{status}">
-            <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}">DRAFT</option>
-        </select>
-        <div class="alert err" th:if="${#fields.hasErrors('status')}" th:errors="*{status}">Invalid</div>
-    </div>
-    <div class="field">
-        <label for="priority">Priority</label>
-        <select id="priority" th:field="*{priority}">
-            <option th:each="p : ${priorities}" th:value="${p}" th:text="${p}">MEDIUM</option>
-        </select>
-        <div class="alert err" th:if="${#fields.hasErrors('priority')}" th:errors="*{priority}">Invalid</div>
     </div>
 </div>
 </body>

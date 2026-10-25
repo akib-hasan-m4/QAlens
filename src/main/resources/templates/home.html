@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{layout/base :: head('Home')}"></head>
-<body>
+<body th:replace="~{layout/base :: shell(~{::main}, 'home')}">
 <main>
     <div class="head">
         <div>
             <div class="crumbs" th:text="${tenant.name}">Acme Corp</div>
             <h1>Welcome, <span id="display-name" th:text="${user.displayName}">User</span></h1>
-            <div class="sub">Authentication works. Projects arrive in M2.</div>
+            <div class="sub">Open a project to work on its requirements and test suites.</div>
         </div>
-        <a class="btn" th:href="@{/o/{s}/projects(s=${tenant.slug})}">Projects</a>
-        <form method="post" th:action="@{/logout}">
-            <button class="btn" type="submit">Sign out</button>
-        </form>
+        <a class="btn p" th:href="@{/o/{s}/projects(s=${tenant.slug})}">View projects</a>
     </div>
     <div class="card">
         <h3>Session</h3>

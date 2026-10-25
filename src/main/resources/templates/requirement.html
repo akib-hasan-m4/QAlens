@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{layout/base :: head('Requirement')}"></head>
-<body>
+<body th:replace="~{layout/base :: shell(~{::main}, 'requirements')}">
 <main>
     <div class="crumbs">
+        <a th:href="@{/o/{s}/projects/{p}(s=${slug},p=${projectId})}" th:text="${shell.project.name}">Project</a> /
         <a th:href="@{/o/{s}/projects/{p}/requirements(s=${slug},p=${projectId})}">Requirements</a> /
         <span th:text="${requirement.extKey != null} ? ${requirement.extKey} : ${'#' + requirement.id}">REQ-1</span>
     </div>
@@ -31,7 +32,7 @@
     </div>
     <div class="card" th:if="${mayEdit}">
         <h3>Edit requirement</h3>
-        <form method="post"
+        <form class="narrow" method="post"
               th:action="@{/o/{s}/projects/{p}/requirements/{id}(s=${slug},p=${projectId},id=${requirement.id})}"
               th:object="${form}">
             <div th:replace="~{requirement-fields :: fields}"></div>

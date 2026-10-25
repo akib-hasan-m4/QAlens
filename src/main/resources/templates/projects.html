@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{layout/base :: head('Projects')}"></head>
-<body>
+<body th:replace="~{layout/base :: shell(~{::main}, 'projects')}">
 <main>
-    <div class="crumbs"><a th:href="@{/o/{s}/(s=${slug})}" th:text="${slug}">acme</a> / Projects</div>
+    <div class="crumbs" th:text="${shell.orgName}">Acme Corp</div>
     <h1>Projects</h1>
     <div class="sub">Projects where you hold a role.</div>
     <div class="card">
@@ -20,7 +20,7 @@
     </div>
     <div class="card" th:if="${mayCreate}">
         <h3>New project</h3>
-        <form method="post" th:action="@{/o/{s}/projects(s=${slug})}" th:object="${form}">
+        <form class="narrow" method="post" th:action="@{/o/{s}/projects(s=${slug})}" th:object="${form}">
             <div class="field">
                 <label for="name">Name</label>
                 <input class="input" id="name" type="text" th:field="*{name}" maxlength="200" required>

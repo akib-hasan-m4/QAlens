@@ -1,25 +1,15 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{layout/base :: head('Project')}"></head>
-<body>
+<body th:replace="~{layout/base :: shell(~{::main}, 'overview')}">
 <main>
     <div class="crumbs">
-        <a th:href="@{/o/{s}/(s=${slug})}" th:text="${slug}">acme</a> /
         <a th:href="@{/o/{s}/projects(s=${slug})}">Projects</a> /
         <span th:text="${project.key}">DEMO</span>
     </div>
-    <div class="head">
-        <div>
-            <h1 id="project-name"><span th:text="${project.name}">Project</span>
-                <span class="badge" th:if="${project.archived}">Archived</span></h1>
-            <div class="sub" th:text="${project.description}">Description</div>
-        </div>
-        <div>
-            <a class="btn" th:href="@{/o/{s}/projects/{id}/requirements(s=${slug},id=${project.id})}">Requirements</a>
-            <a class="btn" th:href="@{/o/{s}/projects/{id}/suites(s=${slug},id=${project.id})}">Test suites</a>
-            <a class="btn" th:href="@{/o/{s}/projects/{id}/settings(s=${slug},id=${project.id})}">Settings</a>
-        </div>
-    </div>
+    <h1 id="project-name"><span th:text="${project.name}">Project</span>
+        <span class="badge" th:if="${project.archived}">Archived</span></h1>
+    <div class="sub" th:text="${project.description}">Description</div>
     <div class="card">
         <h3>Your access</h3>
         <p>Role on this project: <span id="my-role" class="badge info" th:text="${project.myRole}">VIEWER</span></p>

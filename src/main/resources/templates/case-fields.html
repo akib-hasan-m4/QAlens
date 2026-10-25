@@ -2,22 +2,24 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <body>
 <div th:fragment="fields">
-    <div class="field">
-        <label for="title">Title</label>
-        <input class="input" id="title" type="text" th:field="*{title}" maxlength="500" required>
-        <div class="alert err" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">Invalid</div>
+    <div class="row-split">
+        <div class="field">
+            <label for="title">Title</label>
+            <input class="input" id="title" type="text" th:field="*{title}" maxlength="500" required>
+            <div class="alert err" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">Invalid</div>
+        </div>
+        <div class="field">
+            <label for="priority">Priority</label>
+            <select id="priority" th:field="*{priority}">
+                <option th:each="p : ${priorities}" th:value="${p}" th:text="${p}">MEDIUM</option>
+            </select>
+            <div class="alert err" th:if="${#fields.hasErrors('priority')}" th:errors="*{priority}">Invalid</div>
+        </div>
     </div>
     <div class="field">
         <label for="precondition">Precondition</label>
         <textarea class="input" id="precondition" th:field="*{precondition}" maxlength="5000" rows="3"></textarea>
         <div class="alert err" th:if="${#fields.hasErrors('precondition')}" th:errors="*{precondition}">Invalid</div>
-    </div>
-    <div class="field">
-        <label for="priority">Priority</label>
-        <select id="priority" th:field="*{priority}">
-            <option th:each="p : ${priorities}" th:value="${p}" th:text="${p}">MEDIUM</option>
-        </select>
-        <div class="alert err" th:if="${#fields.hasErrors('priority')}" th:errors="*{priority}">Invalid</div>
     </div>
     <div class="field">
         <label>Steps</label>
@@ -29,7 +31,7 @@
                        th:name="|steps[${i.index}].action|" th:value="${st.action}">
                 <input class="input" type="text" maxlength="1000" aria-label="Expected result"
                        th:name="|steps[${i.index}].expected|" th:value="${st.expected}">
-                <button class="btn step-remove" type="button" aria-label="Remove step">Remove</button>
+                <button class="btn ghost danger icon step-remove" type="button" aria-label="Remove step" title="Remove step">&times;</button>
             </div>
         </div>
         <template id="step-template">
@@ -37,10 +39,10 @@
                 <span class="step-no"></span>
                 <input class="input" type="text" maxlength="1000" aria-label="Action" name="steps[__INDEX__].action">
                 <input class="input" type="text" maxlength="1000" aria-label="Expected result" name="steps[__INDEX__].expected">
-                <button class="btn step-remove" type="button" aria-label="Remove step">Remove</button>
+                <button class="btn ghost danger icon step-remove" type="button" aria-label="Remove step" title="Remove step">&times;</button>
             </div>
         </template>
-        <button class="btn" id="step-add" type="button">Add step</button>
+        <button class="btn s" id="step-add" type="button">+ Add step</button>
         <div class="alert err" th:if="${#fields.hasErrors('stepsValid')}" th:errors="*{stepsValid}">Invalid</div>
     </div>
     <script th:src="@{/js/steps.js}" defer></script>

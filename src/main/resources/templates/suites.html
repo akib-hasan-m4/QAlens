@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{layout/base :: head('Test suites')}"></head>
-<body>
+<body th:replace="~{layout/base :: shell(~{::main}, 'suites')}">
 <main>
     <div class="crumbs">
-        <a th:href="@{/o/{s}/projects(s=${slug})}">Projects</a> /
-        <a th:href="@{/o/{s}/projects/{p}(s=${slug},p=${projectId})}">Project</a> / Suites
+        <a th:href="@{/o/{s}/projects/{p}(s=${slug},p=${projectId})}" th:text="${shell.project.name}">Project</a> /
+        Test suites
     </div>
     <h1>Test suites</h1>
     <div class="card">
@@ -22,7 +22,7 @@
     </div>
     <div class="card" th:if="${mayEdit}">
         <h3>New suite</h3>
-        <form method="post" th:action="@{/o/{s}/projects/{p}/suites(s=${slug},p=${projectId})}" th:object="${form}">
+        <form class="narrow" method="post" th:action="@{/o/{s}/projects/{p}/suites(s=${slug},p=${projectId})}" th:object="${form}">
             <div class="field">
                 <label for="name">Name</label>
                 <input class="input" id="name" type="text" th:field="*{name}" maxlength="200" required>

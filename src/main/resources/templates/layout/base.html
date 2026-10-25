@@ -9,5 +9,52 @@
     <link rel="stylesheet" th:href="@{/css/clarity.css}">
     <script th:src="@{/js/csrf.js}" defer></script>
 </head>
-<body></body>
+<!-- Signed-in pages: <body th:replace="~{layout/base :: shell(~{::main}, 'section')}"><main>...</main></body> -->
+<body th:fragment="shell(content, section)">
+<div class="app">
+    <aside class="side">
+        <a class="logo" th:href="@{/}">QA<span>lens</span></a>
+        <nav aria-label="Organisation">
+            <a th:href="@{/o/{s}/projects(s=${shell.orgSlug})}"
+               th:classappend="${section == 'projects'} ? 'on'">Projects</a>
+        </nav>
+        <th:block th:if="${shell.project != null}">
+            <a class="proj" th:href="@{/o/{s}/projects/{id}(s=${shell.orgSlug},id=${shell.project.id})}">
+                <span th:text="${shell.project.name}">Project</span>
+                <small th:text="${shell.project.key + ' · ' + shell.orgName}">KEY · Org</small>
+            </a>
+            <nav aria-label="Project">
+                <a th:href="@{/o/{s}/projects/{id}(s=${shell.orgSlug},id=${shell.project.id})}"
+                   th:classappend="${section == 'overview'} ? 'on'">Overview</a>
+                <h6>Plan</h6>
+                <a th:href="@{/o/{s}/projects/{id}/requirements(s=${shell.orgSlug},id=${shell.project.id})}"
+                   th:classappend="${section == 'requirements'} ? 'on'">Requirements</a>
+                <a th:href="@{/o/{s}/projects/{id}/suites(s=${shell.orgSlug},id=${shell.project.id})}"
+                   th:classappend="${section == 'suites'} ? 'on'">Test suites</a>
+                <h6>Execute</h6>
+                <span class="soon" aria-disabled="true">Test runs <small>soon</small></span>
+                <span class="soon" aria-disabled="true">Defects <small>soon</small></span>
+                <h6>Insight</h6>
+                <span class="soon" aria-disabled="true">Coverage <small>soon</small></span>
+                <th:block th:if="${shell.mayManageProject()}">
+                    <h6>Manage</h6>
+                    <a th:href="@{/o/{s}/projects/{id}/settings(s=${shell.orgSlug},id=${shell.project.id})}"
+                       th:classappend="${section == 'settings'} ? 'on'">Settings</a>
+                </th:block>
+            </nav>
+        </th:block>
+        <div class="side-foot">
+            <span class="ava" th:text="${shell.initials()}">AA</span>
+            <div class="who">
+                <b th:text="${shell.userName}">User</b>
+                <small th:text="${shell.orgName}">Org</small>
+            </div>
+            <form method="post" th:action="@{/logout}">
+                <button class="btn s ghost" type="submit">Sign out</button>
+            </form>
+        </div>
+    </aside>
+    <main th:replace="${content}"></main>
+</div>
+</body>
 </html>

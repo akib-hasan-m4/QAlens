@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{layout/base :: head('Project settings')}"></head>
-<body>
+<body th:replace="~{layout/base :: shell(~{::main}, 'settings')}">
 <main>
     <div class="crumbs">
-        <a th:href="@{/o/{s}/projects/{id}(s=${slug},id=${project.id})}" th:text="${project.key}">DEMO</a> / Settings
+        <a th:href="@{/o/{s}/projects/{id}(s=${slug},id=${project.id})}" th:text="${project.name}">Project</a> / Settings
     </div>
     <h1>Project settings</h1>
     <div class="sub">Visible to ADMIN and QA_LEAD only.</div>
@@ -18,7 +18,7 @@
     </div>
     <div class="card">
         <h3>Details</h3>
-        <form method="post" th:action="@{/o/{s}/projects/{id}/settings(s=${slug},id=${project.id})}" th:object="${form}">
+        <form class="narrow" method="post" th:action="@{/o/{s}/projects/{id}/settings(s=${slug},id=${project.id})}" th:object="${form}">
             <div class="field">
                 <label for="name">Name</label>
                 <input class="input" id="name" type="text" th:field="*{name}" maxlength="200" required>
