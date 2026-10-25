@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/base :: head('Test case')}"></head>
+<body>
+<main>
+    <div class="crumbs">
+        <a th:href="@{/o/{s}/projects/{p}/suites(s=${slug},p=${projectId})}">Suites</a> /
+        <a th:href="@{/o/{s}/projects/{p}/suites/{id}(s=${slug},p=${projectId},id=${tc.suiteId})}"
+           th:text="${tc.suiteName}">Suite</a> / <span th:text="${'Case #' + tc.id}">Case</span>
+    </div>
+    <h1 id="case-title" th:text="${tc.shown.title}">Title</h1>
+    <div class="sub">
+        <span class="badge info" id="case-version" th:text="${'v' + tc.shown.versionNo}">v1</span>
+        <span class="badge" th:if="${!tc.showingCurrent}">Older version (current is
+            <a th:href="@{/o/{s}/projects/{p}/cases/{id}(s=${slug},p=${projectId},id=${tc.id})}"
+               th:text="${'v' + tc.currentVersionNo}">v2</a>)</span>
+        <span th:text="${tc.shown.priority}">MEDIUM</span> priority ·
+        <span th:text="${tc.shown.origin}">MANUAL</span>
+    </div>
+    <div class="card">
+        <h3>Precondition</h3>
+        <p id="case-precondition" th:text="${tc.shown.precondition}">None</p>
+        <h3>Steps</h3>
+        <table>
+            <tr><th>#</th><th>Action</th><th>Expected result</th></tr>
+            <tr th:each="st, i : ${tc.shown.steps}">
+                <td th:text="${i.count}">1</td>
+                <td th:text="${st.action}">Action</td>
+                <td th:text="${st.expected}">Expected</td>
+            </tr>
+        </table>
+    </div>
+    <div class="card">
+        <h3>History</h3>
+        <table id="case-history">
+            <tr><th>Version</th><th>Title</th><th>Origin</th><th>By</th><th>Saved</th></tr>
+            <tr th:each="v : ${tc.history}">
+                <td><a th:href="@{/o/{s}/projects/{p}/cases/{id}(s=${slug},p=${projectId},id=${tc.id},version=${v.versionNo})}"
+                       th:text="${'v' + v.versionNo}">v1</a></td>
+                <td th:text="${v.title}">Title</td>
+                <td th:text="${v.origin}">MANUAL</td>
+                <td th:text="${v.author}">Someone</td>
+                <td th:text="${#temporals.format(v.createdAt, 'yyyy-MM-dd HH:mm')}">2026-10-25</td>
+            </tr>
+        </table>
+    </div>
+    <div class="card" th:if="${mayEdit}">
+        <h3 th:text="${tc.showingCurrent} ? 'Edit (saves as a new version)' : ${'Restore v' + tc.shown.versionNo + ' (saves as a new version)'}">Edit</h3>
+        <form method="post" th:action="@{/o/{s}/projects/{p}/cases/{id}(s=${slug},p=${projectId},id=${tc.id})}"
+              th:object="${form}">
+            <div th:replace="~{case-fields :: fields}"></div>
+            <button class="btn p" type="submit">Save new version</button>
+        </form>
+    </div>
+</main>
+</body>
+</html>

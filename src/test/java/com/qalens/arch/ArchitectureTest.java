@@ -4,6 +4,9 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
 import com.qalens.repository.ProjectRepository;
 import com.qalens.repository.RequirementRepository;
+import com.qalens.repository.TestCaseRepository;
+import com.qalens.repository.TestCaseVersionRepository;
+import com.qalens.repository.TestSuiteRepository;
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaMethodCall;
 import com.tngtech.archunit.core.importer.ImportOption;
@@ -27,7 +30,10 @@ class ArchitectureTest {
             .should().dependOnClassesThat().resideInAPackage("..ai..")
             .allowEmptyShould(true);
 
-    private static final Set<String> TENANT_SCOPED_REPOSITORIES = Set.of(ProjectRepository.class.getName(), RequirementRepository.class.getName());
+    private static final Set<String> TENANT_SCOPED_REPOSITORIES = Set.of(
+            ProjectRepository.class.getName(), RequirementRepository.class.getName(),
+            TestSuiteRepository.class.getName(), TestCaseRepository.class.getName(),
+            TestCaseVersionRepository.class.getName());
 
     private static final Set<String> UNCONSTRAINED_FINDERS =
             Set.of("findById", "getById", "getReferenceById", "findAllById", "findAll", "existsById", "deleteById");

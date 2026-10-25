@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/base :: head('Suite')}"></head>
+<body>
+<main>
+    <div class="crumbs">
+        <a th:href="@{/o/{s}/projects/{p}/suites(s=${slug},p=${projectId})}">Suites</a> /
+        <span th:text="${suite.name}">Suite</span>
+    </div>
+    <h1 id="suite-name" th:text="${suite.name}">Suite</h1>
+    <div class="card" th:if="${mayEdit}">
+        <form method="post" th:action="@{/o/{s}/projects/{p}/suites/{id}/rename(s=${slug},p=${projectId},id=${suite.id})}"
+              th:object="${renameForm}">
+            <div class="field">
+                <label for="name">Rename suite</label>
+                <input class="input" id="name" type="text" th:field="*{name}" maxlength="200" required>
+                <div class="alert err" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Invalid</div>
+            </div>
+            <button class="btn" type="submit">Rename</button>
+        </form>
+    </div>
+    <div class="card">
+        <h3>Test cases</h3>
+        <p th:if="${#lists.isEmpty(cases)}">No test cases in this suite.</p>
+        <table th:unless="${#lists.isEmpty(cases)}">
+            <tr><th>Title</th><th>Priority</th><th>Version</th></tr>
+            <tr th:each="c : ${cases}">
+                <td><a th:href="@{/o/{s}/projects/{p}/cases/{id}(s=${slug},p=${projectId},id=${c.id})}"
+                       th:text="${c.title}">Case</a></td>
+                <td th:text="${c.priority}">MEDIUM</td>
+                <td th:text="${'v' + c.versionNo}">v1</td>
+            </tr>
+        </table>
+    </div>
+    <div class="card" th:if="${mayEdit}">
+        <h3>New test case</h3>
+        <form method="post" th:action="@{/o/{s}/projects/{p}/suites/{id}/cases(s=${slug},p=${projectId},id=${suite.id})}"
+              th:object="${form}">
+            <div th:replace="~{case-fields :: fields}"></div>
+            <button class="btn p" type="submit">Create test case</button>
+        </form>
+    </div>
+</main>
+</body>
+</html>
