@@ -56,7 +56,7 @@ class TestCaseServiceTest {
     }
 
     private static CaseForm form(String title) {
-        return new CaseForm(title, "pre", CasePriority.HIGH, "Do it | It works");
+        return CaseForm.of(title, "pre", CasePriority.HIGH, List.of(new TestStep("Do it", "It works")));
     }
 
     @Test

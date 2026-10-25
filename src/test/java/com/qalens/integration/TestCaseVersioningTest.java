@@ -86,8 +86,15 @@ class TestCaseVersioningTest {
     }
 
     private MockHttpServletRequestBuilder caseForm(String path, String title, String steps, QalensUserDetails p) {
-        return post(path).param("title", title).param("precondition", "pre").param("priority", "HIGH")
-                .param("stepsText", steps).with(user(p)).with(csrf());
+        var request = post(path).param("title", title).param("precondition", "pre").param("priority", "HIGH");
+        int i = 0;
+        for (String line : steps.split("\\n")) {
+            String[] parts = line.split("\\|", 2);
+            request.param("steps[" + i + "].action", parts[0]);
+            request.param("steps[" + i + "].expected", parts.length > 1 ? parts[1] : "");
+            i++;
+        }
+        return request.with(user(p)).with(csrf());
     }
 
     private TestCase newCase(String title) {
@@ -225,7 +232,7 @@ class TestCaseVersioningTest {
         var p = userWithRole("ADMIN");
         mvc.perform(caseForm(base() + "/suites/" + suite.getId() + "/cases", "", "a | b", p))
                 .andExpect(status().isBadRequest());
-        mvc.perform(caseForm(base() + "/suites/" + suite.getId() + "/cases", "No steps", "  ", p))
+        mvc.perform(caseForm(base() + "/suites/" + suite.getId() + "/cases", "No steps", " | ", p))
                 .andExpect(status().isBadRequest());
         mvc.perform(post(base() + "/suites").param("name", " ").with(user(p)).with(csrf()))
                 .andExpect(status().isBadRequest());
@@ -243,7 +250,7 @@ class TestCaseVersioningTest {
                 .andExpect(content().string(not(containsString("<script>alert"))))
                 .andExpect(content().string(not(containsString("<img src=x"))));
         mvc.perform(post(base() + "/cases/" + tc.getId()).param("title", "t").param("priority", "LOW")
-                .param("stepsText", "a | b").with(user(p))).andExpect(status().isForbidden());
+                .param("steps[0].action", "a").with(user(p))).andExpect(status().isForbidden());
     }
 
     @Test

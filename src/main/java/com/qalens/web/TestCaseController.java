@@ -5,6 +5,7 @@ import com.qalens.service.CaseForm;
 import com.qalens.service.CaseVersionView;
 import com.qalens.service.CaseView;
 import com.qalens.service.TestCaseService;
+import com.qalens.service.TraceLinkService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -24,9 +25,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class TestCaseController {
 
     private final TestCaseService cases;
+    private final TraceLinkService links;
 
-    public TestCaseController(TestCaseService cases) {
+    public TestCaseController(TestCaseService cases, TraceLinkService links) {
         this.cases = cases;
+        this.links = links;
     }
 
     /** {@code version} selects a past version to read; the edit form is prefilled from what is shown. */
@@ -52,6 +55,20 @@ public class TestCaseController {
         return "redirect:/o/" + slug + "/projects/" + projectId + "/cases/" + caseId;
     }
 
+    @PostMapping("/requirements")
+    String link(@PathVariable String slug, @PathVariable Long projectId, @PathVariable Long caseId,
+                @RequestParam Long requirementId) {
+        links.link(projectId, caseId, requirementId);
+        return "redirect:/o/" + slug + "/projects/" + projectId + "/cases/" + caseId;
+    }
+
+    @PostMapping("/requirements/{requirementId}/remove")
+    String unlink(@PathVariable String slug, @PathVariable Long projectId, @PathVariable Long caseId,
+                  @PathVariable Long requirementId) {
+        links.unlink(projectId, caseId, requirementId);
+        return "redirect:/o/" + slug + "/projects/" + projectId + "/cases/" + caseId;
+    }
+
     private String page(String slug, Long projectId, CaseView view, CaseForm form, Model model) {
         model.addAttribute("slug", slug);
         model.addAttribute("projectId", projectId);
@@ -59,6 +76,8 @@ public class TestCaseController {
         model.addAttribute("mayEdit", cases.mayEdit(projectId));
         model.addAttribute("form", form);
         model.addAttribute("priorities", CasePriority.values());
+        model.addAttribute("linked", links.requirementsOfCase(projectId, view.id()));
+        model.addAttribute("linkable", links.linkableRequirements(projectId, view.id()));
         return "test-case";
     }
 }

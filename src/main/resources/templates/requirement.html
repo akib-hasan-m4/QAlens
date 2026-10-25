@@ -16,6 +16,19 @@
         <h3>Description</h3>
         <p id="requirement-body" th:text="${requirement.body}">Body</p>
     </div>
+    <div class="card">
+        <h3>Test cases</h3>
+        <p id="no-cases" th:if="${#lists.isEmpty(linkedCases)}">No test case verifies this requirement yet.</p>
+        <table id="linked-cases" th:unless="${#lists.isEmpty(linkedCases)}">
+            <tr><th>Test case</th><th>Priority</th><th>Version</th></tr>
+            <tr th:each="c : ${linkedCases}">
+                <td><a th:href="@{/o/{s}/projects/{p}/cases/{id}(s=${slug},p=${projectId},id=${c.id})}"
+                       th:text="${c.title}">Case</a></td>
+                <td th:text="${c.priority}">MEDIUM</td>
+                <td th:text="${'v' + c.versionNo}">v1</td>
+            </tr>
+        </table>
+    </div>
     <div class="card" th:if="${mayEdit}">
         <h3>Edit requirement</h3>
         <form method="post"

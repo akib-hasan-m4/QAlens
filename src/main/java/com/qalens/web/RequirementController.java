@@ -5,6 +5,7 @@ import com.qalens.domain.RequirementStatus;
 import com.qalens.service.RequirementForm;
 import com.qalens.service.RequirementService;
 import com.qalens.service.RequirementView;
+import com.qalens.service.TraceLinkService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -24,9 +25,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class RequirementController {
 
     private final RequirementService requirements;
+    private final TraceLinkService links;
 
-    public RequirementController(RequirementService requirements) {
+    public RequirementController(RequirementService requirements, TraceLinkService links) {
         this.requirements = requirements;
+        this.links = links;
     }
 
     @GetMapping
@@ -84,6 +87,7 @@ public class RequirementController {
         model.addAttribute("slug", slug);
         model.addAttribute("projectId", projectId);
         model.addAttribute("requirement", requirement);
+        model.addAttribute("linkedCases", links.casesOfRequirement(projectId, requirement.id()));
         model.addAttribute("mayEdit", requirements.mayEdit(projectId));
         model.addAttribute("form", form);
         addChoices(model);

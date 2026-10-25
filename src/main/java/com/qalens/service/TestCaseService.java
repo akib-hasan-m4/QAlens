@@ -97,8 +97,8 @@ public class TestCaseService {
 
     private int appendVersion(TestCase tc, CaseForm form, CaseOrigin origin, Long userId) {
         int next = versions.latestVersionNo(tc.getId()) + 1;
-        TestCaseVersion saved = versions.save(new TestCaseVersion(tc.getId(), next, form.title(),
-                form.precondition(), form.steps(), form.priority(), origin, userId));
+        TestCaseVersion saved = versions.save(new TestCaseVersion(tc.getId(), next, form.getTitle(),
+                form.getPrecondition(), form.parsedSteps(), form.getPriority(), origin, userId));
         tc.pointTo(saved);
         return next;
     }

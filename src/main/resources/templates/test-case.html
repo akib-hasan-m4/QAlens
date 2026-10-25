@@ -31,6 +31,35 @@
         </table>
     </div>
     <div class="card">
+        <h3>Linked requirements</h3>
+        <p id="no-links" th:if="${#lists.isEmpty(linked)}">Not linked to any requirement.</p>
+        <table id="case-links" th:unless="${#lists.isEmpty(linked)}">
+            <tr><th>Requirement</th><th>Status</th><th></th></tr>
+            <tr th:each="r : ${linked}">
+                <td><a th:href="@{/o/{s}/projects/{p}/requirements/{id}(s=${slug},p=${projectId},id=${r.id})}"
+                       th:text="${(r.extKey != null ? r.extKey + ' · ' : '') + r.title}">Requirement</a></td>
+                <td th:text="${r.status}">DRAFT</td>
+                <td>
+                    <form method="post" th:if="${mayEdit}"
+                          th:action="@{/o/{s}/projects/{p}/cases/{c}/requirements/{r}/remove(s=${slug},p=${projectId},c=${tc.id},r=${r.id})}">
+                        <button class="btn" type="submit">Unlink</button>
+                    </form>
+                </td>
+            </tr>
+        </table>
+        <form method="post" th:if="${mayEdit and !#lists.isEmpty(linkable)}"
+              th:action="@{/o/{s}/projects/{p}/cases/{c}/requirements(s=${slug},p=${projectId},c=${tc.id})}">
+            <div class="field">
+                <label for="requirementId">Link a requirement</label>
+                <select id="requirementId" name="requirementId">
+                    <option th:each="r : ${linkable}" th:value="${r.id}"
+                            th:text="${(r.extKey != null ? r.extKey + ' · ' : '') + r.title}">Requirement</option>
+                </select>
+            </div>
+            <button class="btn" type="submit">Link</button>
+        </form>
+    </div>
+    <div class="card">
         <h3>History</h3>
         <table id="case-history">
             <tr><th>Version</th><th>Title</th><th>Origin</th><th>By</th><th>Saved</th></tr>

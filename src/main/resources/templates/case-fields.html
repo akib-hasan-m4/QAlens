@@ -20,11 +20,30 @@
         <div class="alert err" th:if="${#fields.hasErrors('priority')}" th:errors="*{priority}">Invalid</div>
     </div>
     <div class="field">
-        <label for="stepsText">Steps (one per line: action | expected result)</label>
-        <textarea class="input" id="stepsText" th:field="*{stepsText}" maxlength="20000" rows="8"></textarea>
+        <label>Steps</label>
+        <div id="steps" class="steps">
+            <div class="step-head"><span>#</span><span>Action</span><span>Expected result</span><span></span></div>
+            <div class="step-row" th:each="st, i : *{editorRows()}">
+                <span class="step-no" th:text="${i.count}">1</span>
+                <input class="input" type="text" maxlength="1000" aria-label="Action"
+                       th:name="|steps[${i.index}].action|" th:value="${st.action}">
+                <input class="input" type="text" maxlength="1000" aria-label="Expected result"
+                       th:name="|steps[${i.index}].expected|" th:value="${st.expected}">
+                <button class="btn step-remove" type="button" aria-label="Remove step">Remove</button>
+            </div>
+        </div>
+        <template id="step-template">
+            <div class="step-row">
+                <span class="step-no"></span>
+                <input class="input" type="text" maxlength="1000" aria-label="Action" name="steps[__INDEX__].action">
+                <input class="input" type="text" maxlength="1000" aria-label="Expected result" name="steps[__INDEX__].expected">
+                <button class="btn step-remove" type="button" aria-label="Remove step">Remove</button>
+            </div>
+        </template>
+        <button class="btn" id="step-add" type="button">Add step</button>
         <div class="alert err" th:if="${#fields.hasErrors('stepsValid')}" th:errors="*{stepsValid}">Invalid</div>
-        <div class="alert err" th:if="${#fields.hasErrors('stepsText')}" th:errors="*{stepsText}">Invalid</div>
     </div>
+    <script th:src="@{/js/steps.js}" defer></script>
 </div>
 </body>
 </html>
