@@ -13,6 +13,7 @@
         <span class="badge info" th:text="${requirement.status}">DRAFT</span>
         <span th:text="${requirement.priority}">MEDIUM</span> priority
     </div>
+    <div class="alert ok" id="notice" th:if="${notice}" th:text="${notice}">Saved</div>
     <div class="card">
         <h3>Description</h3>
         <p id="requirement-body" th:text="${requirement.body}">Body</p>
@@ -29,6 +30,95 @@
                 <td th:text="${'v' + c.versionNo}">v1</td>
             </tr>
         </table>
+    </div>
+    <div class="card" id="ai-card" th:if="${mayEdit}">
+        <div class="ai-head">
+            <h3>Generate test cases with AI</h3>
+            <form method="post" class="ai-generate"
+                  th:action="@{/o/{s}/projects/{p}/requirements/{id}/drafts(s=${slug},p=${projectId},id=${requirement.id})}"
+                  th:attr="hx-post=@{/o/{s}/projects/{p}/requirements/{id}/drafts(s=${slug},p=${projectId},id=${requirement.id})}"
+                  hx-target="#ai-panel" hx-swap="innerHTML" hx-indicator="#ai-spinner" hx-disabled-elt="find button">
+                <span id="ai-spinner" class="htmx-indicator ai-spinner" role="status">
+                    <span class="spin" aria-hidden="true"></span> Generating… the first request can take up to a minute
+                </span>
+                <button class="btn p" id="ai-generate" type="submit">Generate test cases</button>
+            </form>
+        </div>
+        <p class="muted" th:unless="${aiPanel}">Drafts are proposals: nothing is saved until you review and accept them.</p>
+        <div id="ai-panel">
+            <div th:fragment="ai-panel" th:if="${aiPanel}">
+                <th:block th:unless="${aiOk}">
+                    <div class="alert err" id="ai-error" th:text="${aiMessage}">The AI model is not available.</div>
+                    <a class="btn s" id="ai-manual" th:href="@{/o/{s}/projects/{p}/suites(s=${slug},p=${projectId})}">Write test cases manually</a>
+                </th:block>
+                <form th:if="${aiOk}" id="ai-drafts" method="post" th:object="${draftsForm}"
+                      th:action="@{/o/{s}/projects/{p}/requirements/{id}/drafts/accept(s=${slug},p=${projectId},id=${requirementId})}">
+                    <p class="muted">
+                        <span th:text="${#lists.size(draftsForm.drafts) + ' drafts.'}">3 drafts.</span>
+                        Review and edit them, untick any you do not want, then accept.
+                        <span th:if="${aiDropped > 0}" th:text="${aiDropped + ' unusable drafts were discarded.'}">1 discarded.</span>
+                    </p>
+                    <div class="alert err" th:if="${#fields.hasGlobalErrors()}" th:each="e : ${#fields.globalErrors()}" th:text="${e}">Error</div>
+                    <div class="alert err" th:if="${#lists.isEmpty(suites)}">
+                        This project has no test suite yet.
+                        <a th:href="@{/o/{s}/projects/{p}/suites(s=${slug},p=${projectId})}">Create a suite</a> first.
+                    </div>
+                    <div class="field">
+                        <label for="ai-suite">Add to suite</label>
+                        <select id="ai-suite" th:field="*{suiteId}" required>
+                            <option th:each="s : ${suites}" th:value="${s.id}"
+                                    th:text="${#strings.repeat('— ', s.depth) + s.name}">Suite</option>
+                        </select>
+                        <div class="alert err" th:if="${#fields.hasErrors('suiteId')}" th:errors="*{suiteId}">Invalid</div>
+                    </div>
+                    <fieldset class="draft" th:each="d, i : *{drafts}">
+                        <legend>
+                            <label class="draft-pick">
+                                <input type="checkbox" th:field="*{drafts[__${i.index}__].selected}">
+                                <span th:text="${'Draft ' + i.count}">Draft 1</span>
+                            </label>
+                        </legend>
+                        <div class="row-split">
+                            <div class="field">
+                                <label th:for="|drafts${i.index}.title|">Title</label>
+                                <input class="input" type="text" maxlength="500" th:field="*{drafts[__${i.index}__].title}">
+                                <div class="alert err" th:if="${#fields.hasErrors('drafts[__${i.index}__].title')}"
+                                     th:errors="*{drafts[__${i.index}__].title}">Invalid</div>
+                            </div>
+                            <div class="field">
+                                <label th:for="|drafts${i.index}.priority|">Priority</label>
+                                <select th:field="*{drafts[__${i.index}__].priority}">
+                                    <option th:each="p : ${casePriorities}" th:value="${p}" th:text="${p}">MEDIUM</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label th:for="|drafts${i.index}.precondition|">Precondition</label>
+                            <textarea class="input" rows="2" maxlength="5000"
+                                      th:field="*{drafts[__${i.index}__].precondition}"></textarea>
+                            <div class="alert err" th:if="${#fields.hasErrors('drafts[__${i.index}__].precondition')}"
+                                 th:errors="*{drafts[__${i.index}__].precondition}">Invalid</div>
+                        </div>
+                        <div class="steps">
+                            <div class="step-head"><span>#</span><span>Action</span><span>Expected result</span><span></span></div>
+                            <div class="step-row" th:each="st, j : ${d.editorRows()}">
+                                <span class="step-no" th:text="${j.count}">1</span>
+                                <input class="input" type="text" maxlength="1000" aria-label="Action"
+                                       th:name="|drafts[${i.index}].steps[${j.index}].action|" th:value="${st.action}">
+                                <input class="input" type="text" maxlength="1000" aria-label="Expected result"
+                                       th:name="|drafts[${i.index}].steps[${j.index}].expected|" th:value="${st.expected}">
+                                <span></span>
+                            </div>
+                        </div>
+                        <div class="alert err" th:if="${#fields.hasErrors('drafts[__${i.index}__].stepsValid')}"
+                             th:errors="*{drafts[__${i.index}__].stepsValid}">Invalid</div>
+                    </fieldset>
+                    <p class="muted">Accepted drafts are saved as AI-generated version 1 and linked to this requirement.
+                        Clear a step's action to drop it; fill the blank row to add one.</p>
+                    <button class="btn p" id="ai-accept" type="submit" th:disabled="${#lists.isEmpty(suites)}">Accept selected</button>
+                </form>
+            </div>
+        </div>
     </div>
     <div class="card" th:if="${mayEdit}">
         <h3>Edit requirement</h3>

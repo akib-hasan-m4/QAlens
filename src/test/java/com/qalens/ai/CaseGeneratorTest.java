@@ -25,7 +25,7 @@ class CaseGeneratorTest {
 
         assertThat(result.status()).isEqualTo(GenerationResult.Status.OK);
         assertThat(result.drafts()).hasSize(3);
-        verify(log).record(eq("TEST_CASE_GENERATION"), eq("m1"), eq("case-gen-v1"), any(), anyLong(), eq(10), eq(20),
+        verify(log).record(eq("TEST_CASE_GENERATION"), eq("m1"), eq(CaseGenerationPrompt.VERSION), any(), anyLong(), eq(10), eq(20),
                 eq("OK"), isNull(), eq("drafts=3,dropped=0"));
     }
 

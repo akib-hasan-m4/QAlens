@@ -90,3 +90,18 @@ main{padding:20px 16px}
 .head{flex-wrap:wrap}
 .grid,.grid2,.row2,.row-split{grid-template-columns:1fr}
 }
+
+/* AI drafts panel */
+.ai-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.ai-head h3 { margin: 0; }
+.ai-generate { display: flex; align-items: center; gap: 12px; }
+.htmx-indicator { display: none; }
+.htmx-request.htmx-indicator, .htmx-request .htmx-indicator { display: inline-flex; }
+.ai-spinner { align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+.spin { width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+#ai-panel { margin-top: 14px; }
+.draft { border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; margin: 0 0 14px; }
+.draft legend { padding: 0 6px; }
+.draft-pick { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
+.muted { color: var(--muted); font-size: 13px; }

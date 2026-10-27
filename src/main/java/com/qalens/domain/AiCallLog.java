@@ -8,6 +8,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.OffsetDateTime;
 import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 /** One row per model call. Holds a hash of the input and a short summary of the output, never the raw text. */
 @Entity
@@ -28,7 +30,8 @@ public class AiCallLog {
     @Column(name = "prompt_version", updatable = false, length = 20)
     private String promptVersion;
 
-    @Column(name = "input_hash", nullable = false, updatable = false, length = 64, columnDefinition = "char(64)")
+    @JdbcTypeCode(SqlTypes.CHAR)
+    @Column(name = "input_hash", nullable = false, updatable = false, length = 64)
     private String inputHash;
 
     @Column(name = "latency_ms", nullable = false, updatable = false)

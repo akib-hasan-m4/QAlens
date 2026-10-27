@@ -74,11 +74,14 @@ public class TestCaseService {
     @PreAuthorize("@projectAccess.hasRole(#projectId, 'ADMIN', 'QA_LEAD', 'TESTER')")
     @Transactional
     public Long create(Long projectId, Long suiteId, CaseForm form) {
-        suite(projectId, suiteId);
-        Long userId = ProjectAccess.currentUser().getId();
-        TestCase tc = cases.save(new TestCase(suiteId, userId));
-        appendVersion(tc, form, CaseOrigin.MANUAL, userId);
-        return tc.getId();
+        return createAs(projectId, suiteId, form, CaseOrigin.MANUAL);
+    }
+
+    /** Saves an accepted AI draft (possibly edited by the user) as version 1 with origin AI_GENERATED. */
+    @PreAuthorize("@projectAccess.hasRole(#projectId, 'ADMIN', 'QA_LEAD', 'TESTER')")
+    @Transactional
+    public Long createGenerated(Long projectId, Long suiteId, CaseForm form) {
+        return createAs(projectId, suiteId, form, CaseOrigin.AI_GENERATED);
     }
 
     /** Saves the form as the next version. Returns the new version number. */
@@ -93,6 +96,14 @@ public class TestCaseService {
     @Transactional(readOnly = true)
     public boolean mayEdit(Long projectId) {
         return access.hasRole(projectId, "ADMIN", "QA_LEAD", "TESTER");
+    }
+
+    private Long createAs(Long projectId, Long suiteId, CaseForm form, CaseOrigin origin) {
+        suite(projectId, suiteId);
+        Long userId = ProjectAccess.currentUser().getId();
+        TestCase tc = cases.save(new TestCase(suiteId, userId));
+        appendVersion(tc, form, origin, userId);
+        return tc.getId();
     }
 
     private int appendVersion(TestCase tc, CaseForm form, CaseOrigin origin, Long userId) {
