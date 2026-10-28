@@ -19,10 +19,10 @@ public class AiCallLogger {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void record(String feature, String model, String promptVersion, String inputHash, long latencyMs,
+    public void record(Long projectId, String feature, String model, String promptVersion, String inputHash, long latencyMs,
             Integer tokensIn, Integer tokensOut, String status, String error, String outputRef) {
         String message = error == null ? null : error.length() <= MAX_ERROR ? error : error.substring(0, MAX_ERROR);
-        logs.save(new AiCallLog(feature, model, promptVersion, inputHash, (int) Math.min(latencyMs, Integer.MAX_VALUE),
+        logs.save(new AiCallLog(projectId, feature, model, promptVersion, inputHash, (int) Math.min(latencyMs, Integer.MAX_VALUE),
                 tokensIn, tokensOut, status, message, outputRef));
     }
 }

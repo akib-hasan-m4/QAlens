@@ -9,6 +9,9 @@ spring:
     open-in-view: false
     hibernate:
       ddl-auto: validate
+    properties:
+      # timestamptz values come back in the server's zone instead of UTC, so pages show local times
+      hibernate.timezone.default_storage: NORMALIZE
   servlet:
     multipart:
       max-file-size: 10MB

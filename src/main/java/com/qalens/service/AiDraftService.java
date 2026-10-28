@@ -38,7 +38,7 @@ public class AiDraftService {
     public GeneratedDrafts generate(Long projectId, Long requirementId) {
         Requirement r = requirements.findByIdAndProjectId(requirementId, projectId)
                 .orElseThrow(ResourceNotFoundException::new);
-        GenerationResult result = generator.generate(r.getExtKey(), r.getTitle(), r.getBody());
+        GenerationResult result = generator.generate(projectId, r.getExtKey(), r.getTitle(), r.getBody());
         DraftsForm form = new DraftsForm();
         if (result.status() != GenerationResult.Status.OK) {
             return new GeneratedDrafts(false, result.message(), 0, form);

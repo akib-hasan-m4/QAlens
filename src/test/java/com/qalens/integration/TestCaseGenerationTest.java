@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -125,7 +126,7 @@ class TestCaseGenerationTest {
                 .andExpect(content().string(not(containsString("<html"))));
 
         assertThat(aiCalls.count()).isEqualTo(before + 1);
-        assertThat(aiCalls.findAll()).anySatisfy(log -> {
+        assertThat(aiCalls.findTop20ByProjectIdOrderByCreatedAtDescIdDesc(project.getId())).first().satisfies(log -> {
             assertThat(log.getModel()).isEqualTo("stub");
             assertThat(log.getStatus()).isEqualTo("OK");
             assertThat(log.getOutputRef()).isEqualTo("drafts=3,dropped=0");
@@ -193,5 +194,36 @@ class TestCaseGenerationTest {
         mvc.perform(post(requirementPath() + "/drafts").with(user(admin))).andExpect(status().isForbidden());
         mvc.perform(post(requirementPath() + "/drafts/accept").with(user(admin))
                 .param("suiteId", String.valueOf(suite.getId()))).andExpect(status().isForbidden());
+    }
+
+    @Test
+    void leadSeesTheProjectsAiCallsOnTheProjectPage() throws Exception {
+        mvc.perform(generate(userWithRole("TESTER"))).andExpect(status().isOk());
+
+        mvc.perform(get("/o/acme/projects/" + project.getId()).with(user(userWithRole("QA_LEAD"))))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Recent AI calls")))
+                .andExpect(content().string(containsString("TEST_CASE_GENERATION")))
+                .andExpect(content().string(containsString("stub")));
+    }
+
+    @Test
+    void testerAndViewerDoNotSeeTheAiCalls() throws Exception {
+        for (String role : List.of("TESTER", "VIEWER")) {
+            mvc.perform(get("/o/acme/projects/" + project.getId()).with(user(userWithRole(role))))
+                    .andExpect(status().isOk())
+                    .andExpect(content().string(not(containsString("Recent AI calls"))));
+        }
+    }
+
+    @Test
+    void callsOfAnotherProjectAreNotListed() throws Exception {
+        mvc.perform(generate(userWithRole("TESTER"))).andExpect(status().isOk());
+        var admin = userWithRole("ADMIN");
+        fx.grant(users.findById(admin.getId()).orElseThrow(), other, "ADMIN");
+
+        mvc.perform(get("/o/acme/projects/" + other.getId()).with(user(admin)))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("No AI calls yet.")));
     }
 }

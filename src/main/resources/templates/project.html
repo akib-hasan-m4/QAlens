@@ -14,6 +14,31 @@
         <h3>Your access</h3>
         <p>Role on this project: <span id="my-role" class="badge info" th:text="${project.myRole}">VIEWER</span></p>
     </div>
+    <div class="card" id="ai-calls" th:if="${aiCalls != null}">
+        <h3>Recent AI calls</h3>
+        <p class="muted">The last 20 model calls for this project. Inputs are stored as a hash, never as text.</p>
+        <p class="muted" th:if="${#lists.isEmpty(aiCalls)}">No AI calls yet.</p>
+        <table th:unless="${#lists.isEmpty(aiCalls)}">
+            <tr><th>Time</th><th>Feature</th><th>Model</th><th>Status</th><th>Tokens in / out</th>
+                <th>Latency</th><th>Drafts</th></tr>
+            <tr th:each="c : ${aiCalls}">
+                <td class="id" th:text="${#temporals.format(c.createdAt, 'yyyy-MM-dd HH:mm:ss')}">2026-10-29 10:00</td>
+                <td><span th:text="${c.feature}">TEST_CASE_GENERATION</span>
+                    <span class="tag" th:text="${c.promptVersion}">case-gen-v2</span></td>
+                <td th:text="${c.model}">granite4.1:3b</td>
+                <td><span class="badge"
+                          th:classappend="${c.status == 'OK'} ? 'pass' : (${c.status == 'ERROR'} ? 'fail' : 'block')"
+                          th:text="${c.status}" th:title="${c.errorMessage}">OK</span></td>
+                <td class="id" th:text="${(c.tokensIn ?: '–') + ' / ' + (c.tokensOut ?: '–')}">120 / 480</td>
+                <td class="id" th:text="${#numbers.formatDecimal(c.latencyMs / 1000.0, 1, 1) + ' s'}">4.1 s</td>
+                <td class="id">
+                    <span th:text="${c.drafts ?: '–'}">4</span>
+                    <span class="tag" th:if="${c.dropped != null and c.dropped > 0}"
+                          th:text="${'(' + c.dropped + ' dropped)'}">(1 dropped)</span>
+                </td>
+            </tr>
+        </table>
+    </div>
 </main>
 </body>
 </html>

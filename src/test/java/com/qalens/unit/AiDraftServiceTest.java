@@ -52,7 +52,7 @@ class AiDraftServiceTest {
     @Test
     void generateSendsTheRequirementAndReturnsSelectedDrafts() {
         when(requirements.findByIdAndProjectId(3L, 1L)).thenReturn(Optional.of(REQUIREMENT));
-        when(generator.generate("SHOP-2", "Pay by card", "Cards only")).thenReturn(new GenerationResult(
+        when(generator.generate(1L, "SHOP-2", "Pay by card", "Cards only")).thenReturn(new GenerationResult(
                 GenerationResult.Status.OK, List.of(new CaseDraft("Valid card", "Cart has items", CasePriority.HIGH,
                         List.of(new TestStep("Pay", "Accepted")))), 2, null));
 
@@ -72,7 +72,7 @@ class AiDraftServiceTest {
     @Test
     void generateDegradesWithTheGeneratorsMessage() {
         when(requirements.findByIdAndProjectId(3L, 1L)).thenReturn(Optional.of(REQUIREMENT));
-        when(generator.generate(any(), any(), any())).thenReturn(new GenerationResult(
+        when(generator.generate(any(), any(), any(), any())).thenReturn(new GenerationResult(
                 GenerationResult.Status.UNAVAILABLE, List.of(), 0, "Model offline"));
 
         GeneratedDrafts result = service.generate(1L, 3L);

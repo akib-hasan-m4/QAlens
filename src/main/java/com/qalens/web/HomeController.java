@@ -21,6 +21,12 @@ public class HomeController {
         return "redirect:/o/" + user.getOrgSlug() + "/";
     }
 
+    /** A hand-typed {@code /o/acme} goes to the canonical home. The slug comes from the tenant filter, not the URL. */
+    @GetMapping("/o/{slug}")
+    String homeWithoutSlash() {
+        return "redirect:/o/" + tenant.getSlug() + "/";
+    }
+
     /** The tenant filter has already guaranteed that the slug is the caller's own organisation. */
     @GetMapping("/o/{slug}/")
     String home(@AuthenticationPrincipal QalensUserDetails user, Model model) {

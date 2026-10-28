@@ -21,6 +21,9 @@ public class AiCallLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "project_id", updatable = false)
+    private Long projectId;
+
     @Column(nullable = false, updatable = false, length = 50)
     private String feature;
 
@@ -58,8 +61,9 @@ public class AiCallLog {
     protected AiCallLog() {
     }
 
-    public AiCallLog(String feature, String model, String promptVersion, String inputHash, int latencyMs,
+    public AiCallLog(Long projectId, String feature, String model, String promptVersion, String inputHash, int latencyMs,
             Integer tokensIn, Integer tokensOut, String status, String errorMessage, String outputRef) {
+        this.projectId = projectId;
         this.feature = feature;
         this.model = model;
         this.promptVersion = promptVersion;
@@ -74,6 +78,10 @@ public class AiCallLog {
 
     public Long getId() {
         return id;
+    }
+
+    public Long getProjectId() {
+        return projectId;
     }
 
     public String getFeature() {
@@ -114,5 +122,9 @@ public class AiCallLog {
 
     public String getPromptVersion() {
         return promptVersion;
+    }
+
+    public OffsetDateTime getCreatedAt() {
+        return createdAt;
     }
 }

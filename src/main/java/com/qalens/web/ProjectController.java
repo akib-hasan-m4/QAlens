@@ -1,10 +1,12 @@
 package com.qalens.web;
 
+import com.qalens.service.AiCallService;
 import com.qalens.service.ProjectForm;
 import com.qalens.service.ProjectService;
 import com.qalens.service.ProjectView;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import java.util.Set;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,10 +22,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/o/{slug}/projects")
 public class ProjectController {
 
-    private final ProjectService projects;
+    /** Roles that see the AI call history; {@link AiCallService#recent} enforces the same rule. */
+    private static final Set<String> AI_LOG_ROLES = Set.of("ADMIN", "QA_LEAD");
 
-    public ProjectController(ProjectService projects) {
+    private final ProjectService projects;
+    private final AiCallService aiCalls;
+
+    public ProjectController(ProjectService projects, AiCallService aiCalls) {
         this.projects = projects;
+        this.aiCalls = aiCalls;
     }
 
     @GetMapping
@@ -53,7 +60,11 @@ public class ProjectController {
     @GetMapping("/{id}")
     String view(@PathVariable String slug, @PathVariable Long id, Model model) {
         model.addAttribute("slug", slug);
-        model.addAttribute("project", projects.view(id));
+        ProjectView project = projects.view(id);
+        model.addAttribute("project", project);
+        if (AI_LOG_ROLES.contains(project.myRole())) {
+            model.addAttribute("aiCalls", aiCalls.recent(id));
+        }
         return "project";
     }
 

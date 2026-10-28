@@ -2,6 +2,7 @@ package com.qalens.arch;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
+import com.qalens.repository.AiCallLogRepository;
 import com.qalens.repository.ProjectRepository;
 import com.qalens.repository.RequirementLinkRepository;
 import com.qalens.repository.RequirementRepository;
@@ -34,7 +35,8 @@ class ArchitectureTest {
     private static final Set<String> TENANT_SCOPED_REPOSITORIES = Set.of(
             ProjectRepository.class.getName(), RequirementRepository.class.getName(),
             TestSuiteRepository.class.getName(), TestCaseRepository.class.getName(),
-            TestCaseVersionRepository.class.getName(), RequirementLinkRepository.class.getName());
+            TestCaseVersionRepository.class.getName(), RequirementLinkRepository.class.getName(),
+            AiCallLogRepository.class.getName());
 
     private static final Set<String> UNCONSTRAINED_FINDERS =
             Set.of("findById", "getById", "getReferenceById", "findAllById", "findAll", "existsById", "deleteById");

@@ -21,7 +21,7 @@ public class CaseGenerator {
         this.callLog = callLog;
     }
 
-    public GenerationResult generate(String requirementKey, String title, String body) {
+    public GenerationResult generate(Long projectId, String requirementKey, String title, String body) {
         AiPrompt prompt = CaseGenerationPrompt.of(requirementKey, title, body);
         String hash = sha256(prompt.system() + "\n" + prompt.user());
         long started = System.nanoTime();
@@ -29,7 +29,7 @@ public class CaseGenerator {
         try {
             completion = client.complete(prompt);
         } catch (AiUnavailableException e) {
-            callLog.record(prompt.feature(), "unknown", prompt.version(), hash, elapsedMs(started), null, null,
+            callLog.record(projectId, prompt.feature(), "unknown", prompt.version(), hash, elapsedMs(started), null, null,
                     "ERROR", e.getMessage(), null);
             return GenerationResult.failed(GenerationResult.Status.UNAVAILABLE,
                     "The AI model is not available right now. You can still write test cases by hand.");
@@ -40,12 +40,12 @@ public class CaseGenerator {
             if (parsed.drafts().isEmpty()) {
                 throw new AiOutputException("The model answer contained no usable test cases");
             }
-            callLog.record(prompt.feature(), completion.model(), prompt.version(), hash, latency,
+            callLog.record(projectId, prompt.feature(), completion.model(), prompt.version(), hash, latency,
                     completion.tokensIn(), completion.tokensOut(), "OK", null,
                     "drafts=" + parsed.drafts().size() + ",dropped=" + parsed.dropped());
             return GenerationResult.ok(parsed.drafts(), parsed.dropped());
         } catch (AiOutputException e) {
-            callLog.record(prompt.feature(), completion.model(), prompt.version(), hash, latency,
+            callLog.record(projectId, prompt.feature(), completion.model(), prompt.version(), hash, latency,
                     completion.tokensIn(), completion.tokensOut(), "INVALID_OUTPUT", e.getMessage(), null);
             return GenerationResult.failed(GenerationResult.Status.INVALID_OUTPUT,
                     "The AI model gave an answer that could not be used. Try again, or write the test cases by hand.");

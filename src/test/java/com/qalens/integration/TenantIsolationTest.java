@@ -75,6 +75,16 @@ class TenantIsolationTest {
     }
 
     @Test
+    void slugWithoutTrailingSlashRedirectsToHome() throws Exception {
+        mvc.perform(get("/o/acme").with(user(acmeTester)))
+                .andExpect(status().isFound()).andExpect(redirectedUrl("/o/acme/"));
+        mvc.perform(get("/o/globex").with(user(acmeTester))).andExpect(status().isNotFound());
+        mvc.perform(get("/o/no-such-org")).andExpect(status().isNotFound());
+        mvc.perform(get("/o/admin")).andExpect(status().isNotFound());
+        mvc.perform(get("/o/acme")).andExpect(status().isFound()).andExpect(redirectedUrl("http://localhost/login"));
+    }
+
+    @Test
     void anotherOrganisationsSlugIsNotFound() throws Exception {
         mvc.perform(get("/o/globex/").with(user(acmeTester))).andExpect(status().isNotFound());
         mvc.perform(get("/o/globex/projects").with(user(acmeTester))).andExpect(status().isNotFound());
