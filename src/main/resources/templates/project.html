@@ -20,7 +20,7 @@
         <p class="muted" th:if="${#lists.isEmpty(aiCalls)}">No AI calls yet.</p>
         <table th:unless="${#lists.isEmpty(aiCalls)}">
             <tr><th>Time</th><th>Feature</th><th>Model</th><th>Status</th><th>Tokens in / out</th>
-                <th>Latency</th><th>Drafts</th></tr>
+                <th>Latency</th><th>Result</th></tr>
             <tr th:each="c : ${aiCalls}">
                 <td class="id" th:text="${#temporals.format(c.createdAt, 'yyyy-MM-dd HH:mm:ss')}">2026-10-29 10:00</td>
                 <td><span th:text="${c.feature}">TEST_CASE_GENERATION</span>
@@ -32,9 +32,11 @@
                 <td class="id" th:text="${(c.tokensIn ?: '–') + ' / ' + (c.tokensOut ?: '–')}">120 / 480</td>
                 <td class="id" th:text="${#numbers.formatDecimal(c.latencyMs / 1000.0, 1, 1) + ' s'}">4.1 s</td>
                 <td class="id">
-                    <span th:text="${c.drafts ?: '–'}">4</span>
+                    <span th:if="${c.drafts != null}" th:text="${c.drafts + ' drafts'}">4 drafts</span>
                     <span class="tag" th:if="${c.dropped != null and c.dropped > 0}"
                           th:text="${'(' + c.dropped + ' dropped)'}">(1 dropped)</span>
+                    <span th:if="${c.candidates != null}" th:text="${c.candidates + (c.candidates == 1 ? ' case' : ' cases')}">5 cases</span>
+                    <span th:if="${c.drafts == null and c.candidates == null}">–</span>
                 </td>
             </tr>
         </table>

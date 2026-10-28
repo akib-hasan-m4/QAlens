@@ -29,4 +29,10 @@ public interface RequirementLinkRepository extends JpaRepository<RequirementLink
             + "and c.suiteId = s.id and l.requirementId = :requirementId and s.projectId = :projectId order by c.id")
     List<TestCase> casesOfRequirement(@Param("requirementId") Long requirementId,
                                       @Param("projectId") Long projectId);
+
+    @Query("select l.testCaseId as caseId, r.id as requirementId, r.extKey as extKey, r.title as title "
+            + "from Requirement r, RequirementLink l where l.requirementId = r.id "
+            + "and l.testCaseId in :caseIds and r.projectId = :projectId order by r.id")
+    List<LinkedRequirementRow> requirementsOfCases(@Param("caseIds") List<Long> caseIds,
+                                                   @Param("projectId") Long projectId);
 }

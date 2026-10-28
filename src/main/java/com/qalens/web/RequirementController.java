@@ -7,6 +7,8 @@ import com.qalens.service.AiDraftService;
 import com.qalens.service.DraftInput;
 import com.qalens.service.DraftsForm;
 import com.qalens.service.GeneratedDrafts;
+import com.qalens.service.ImpactService;
+import com.qalens.service.ImpactSuggestions;
 import com.qalens.service.RequirementForm;
 import com.qalens.service.RequirementService;
 import com.qalens.service.RequirementView;
@@ -39,14 +41,16 @@ public class RequirementController {
     private final TraceLinkService links;
     private final AiDraftService aiDrafts;
     private final SuiteService suites;
+    private final ImpactService impact;
     private final SpringValidatorAdapter validator;
 
     public RequirementController(RequirementService requirements, TraceLinkService links, AiDraftService aiDrafts,
-                                 SuiteService suites, Validator validator) {
+                                 SuiteService suites, ImpactService impact, Validator validator) {
         this.requirements = requirements;
         this.links = links;
         this.aiDrafts = aiDrafts;
         this.suites = suites;
+        this.impact = impact;
         this.validator = new SpringValidatorAdapter(validator);
     }
 
@@ -137,6 +141,32 @@ public class RequirementController {
         return "redirect:/o/" + slug + "/projects/" + projectId + "/requirements/" + id;
     }
 
+    /** Lists existing cases this requirement probably affects. HTMX gets just the panel; a plain post the page. */
+    @PostMapping("/{id}/impact")
+    String impact(@PathVariable String slug, @PathVariable Long projectId, @PathVariable Long id,
+                  @RequestHeader(value = "HX-Request", required = false) String htmx, Model model) {
+        ImpactSuggestions suggestions = impact.suggest(projectId, id);
+        model.addAttribute("impactPanel", true);
+        model.addAttribute("impact", suggestions);
+        if (htmx != null) {
+            model.addAttribute("slug", slug);
+            model.addAttribute("projectId", projectId);
+            model.addAttribute("requirementId", id);
+            model.addAttribute("mayEdit", requirements.mayEdit(projectId));
+            return "requirement :: impact-panel";
+        }
+        return view(slug, projectId, id, model);
+    }
+
+    /** Links a suggested case to this requirement and comes back to the requirement page. */
+    @PostMapping("/{id}/links")
+    String linkCase(@PathVariable String slug, @PathVariable Long projectId, @PathVariable Long id,
+                    @RequestParam Long caseId, RedirectAttributes redirect) {
+        links.link(projectId, caseId, id);
+        redirect.addFlashAttribute("notice", "Test case linked to this requirement.");
+        return "redirect:/o/" + slug + "/projects/" + projectId + "/requirements/" + id;
+    }
+
     private void addPanel(Long projectId, boolean ok, String message, int dropped, DraftsForm form, Model model) {
         model.addAttribute("aiPanel", true);
         model.addAttribute("aiOk", ok);
@@ -167,6 +197,7 @@ public class RequirementController {
         model.addAttribute("requirementId", requirement.id());
         model.addAttribute("linkedCases", links.casesOfRequirement(projectId, requirement.id()));
         model.addAttribute("mayEdit", requirements.mayEdit(projectId));
+        model.addAttribute("mayImpact", impact.mayUse(projectId));
         model.addAttribute("form", form);
         addChoices(model);
         return "requirement";

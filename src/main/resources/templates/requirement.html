@@ -31,6 +31,59 @@
             </tr>
         </table>
     </div>
+    <div class="card" id="impact-card" th:if="${mayImpact}">
+        <div class="ai-head">
+            <h3>Impacted test cases</h3>
+            <form method="post" class="ai-generate"
+                  th:action="@{/o/{s}/projects/{p}/requirements/{id}/impact(s=${slug},p=${projectId},id=${requirement.id})}"
+                  th:attr="hx-post=@{/o/{s}/projects/{p}/requirements/{id}/impact(s=${slug},p=${projectId},id=${requirement.id})}"
+                  hx-target="#impact-panel" hx-swap="innerHTML" hx-indicator="#impact-spinner" hx-disabled-elt="find button">
+                <span id="impact-spinner" class="htmx-indicator ai-spinner" role="status">
+                    <span class="spin" aria-hidden="true"></span> Comparing with existing test cases…
+                </span>
+                <button class="btn s" id="impact-find" type="submit">Find impacted cases</button>
+            </form>
+        </div>
+        <p class="muted" th:unless="${impactPanel}">Existing test cases that this requirement probably affects,
+            ranked by how close they are in meaning and by their priority. Re-run them when this feature ships.</p>
+        <div id="impact-panel">
+            <div th:fragment="impact-panel" th:if="${impactPanel}">
+                <div class="alert err" id="impact-error" th:unless="${impact.ok}" th:text="${impact.message}">
+                    Impact suggestions are not available right now.</div>
+                <th:block th:if="${impact.ok}">
+                    <p class="muted" id="impact-none" th:if="${#lists.isEmpty(impact.rows)}">
+                        No other test case looks related to this requirement.</p>
+                    <table id="impact-rows" th:unless="${#lists.isEmpty(impact.rows)}">
+                        <tr><th>Test case</th><th>Score</th><th>Why</th><th th:if="${mayEdit}"></th></tr>
+                        <tr th:each="r : ${impact.rows}">
+                            <td>
+                                <span class="badge" th:classappend="${r.runFirst} ? 'block' : 'info'"
+                                      th:text="${r.runFirst} ? 'Run first' : 'Also consider'">Run first</span>
+                                <a th:href="@{/o/{s}/projects/{p}/cases/{c}(s=${slug},p=${projectId},c=${r.caseId})}"
+                                   th:text="${r.title}">Case</a>
+                                <span class="tag" th:text="${r.suiteName + ' · v' + r.versionNo}">Payment · v1</span>
+                            </td>
+                            <td class="id" th:text="${#numbers.formatDecimal(r.score, 1, 2)}">0.72</td>
+                            <td>
+                                <span th:text="${r.similarity + '% similar · ' + r.priority + ' priority'}">72% similar · HIGH priority</span>
+                                <span class="tag" th:unless="${#lists.isEmpty(r.covers)}"
+                                      th:text="${'already covers ' + #strings.listJoin(r.covers, ', ')}">already covers SHOP-2 Pay by card</span>
+                            </td>
+                            <td th:if="${mayEdit}">
+                                <form method="post"
+                                      th:action="@{/o/{s}/projects/{p}/requirements/{id}/links(s=${slug},p=${projectId},id=${requirementId})}">
+                                    <input type="hidden" name="caseId" th:value="${r.caseId}">
+                                    <button class="btn s" type="submit">Link</button>
+                                </form>
+                            </td>
+                        </tr>
+                    </table>
+                    <p class="muted" th:if="${impact.embedded > 0}"
+                       th:text="${impact.embedded + ' test case versions were indexed for this search.'}">3 indexed.</p>
+                </th:block>
+            </div>
+        </div>
+    </div>
     <div class="card" id="ai-card" th:if="${mayEdit}">
         <div class="ai-head">
             <h3>Generate test cases with AI</h3>

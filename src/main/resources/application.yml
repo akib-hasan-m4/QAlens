@@ -27,7 +27,7 @@ spring:
           model: ${OLLAMA_CHAT_MODEL:granite4.1:3b}
       embedding:
         options:
-          model: ${OLLAMA_EMBEDDING_MODEL:bge-small-en-v1.5}
+          model: ${OLLAMA_EMBEDDING_MODEL:all-minilm}
       init:
         pull-model-strategy: never
 
@@ -52,6 +52,11 @@ qalens:
   ai:
     provider: ${QALENS_AI_PROVIDER:ollama}
     timeout: 90s
+  impact:
+    # cosine similarity below this is not suggested at all; a weighted score at or above run-first is "Run first"
+    min-similarity: 0.35
+    run-first: 0.5
+    limit: 10
 
 management:
   endpoints:

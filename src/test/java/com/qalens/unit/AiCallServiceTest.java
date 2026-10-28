@@ -25,12 +25,13 @@ class AiCallServiceTest {
     void draftCountsAreReadFromTheOutputRef() {
         when(repo.findTop20ByProjectIdOrderByCreatedAtDescIdDesc(1L)).thenReturn(List.of(
                 row("OK", "drafts=4,dropped=1", null), row("ERROR", null, "connection refused"),
-                row("OK", "something else", null)));
+                row("OK", "something else", null), row("OK", "candidates=5,embedded=2", null)));
 
         List<AiCallView> views = service.recent(1L);
 
-        assertThat(views).extracting(AiCallView::drafts).containsExactly(4, null, null);
-        assertThat(views).extracting(AiCallView::dropped).containsExactly(1, null, null);
+        assertThat(views).extracting(AiCallView::drafts).containsExactly(4, null, null, null);
+        assertThat(views).extracting(AiCallView::dropped).containsExactly(1, null, null, null);
+        assertThat(views).extracting(AiCallView::candidates).containsExactly(null, null, null, 5);
         assertThat(views.get(1).errorMessage()).isEqualTo("connection refused");
         assertThat(views.get(0).latencyMs()).isEqualTo(4100);
     }
