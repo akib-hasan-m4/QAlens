@@ -1,4 +1,5 @@
 mock_docs/
+docs/
 target/
 .env
 .idea/
