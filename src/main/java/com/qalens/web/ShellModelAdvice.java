@@ -1,8 +1,8 @@
 package com.qalens.web;
 
-import com.qalens.service.ProjectService;
-import com.qalens.service.ProjectView;
-import com.qalens.service.QalensUserDetails;
+import com.qalens.service.project.ProjectService;
+import com.qalens.service.project.ProjectView;
+import com.qalens.security.QalensUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.regex.Matcher;

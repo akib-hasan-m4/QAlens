@@ -1,7 +1,7 @@
 package com.qalens.config;
 
 import com.qalens.repository.OrganizationRepository;
-import com.qalens.service.QalensUserDetails;
+import com.qalens.security.QalensUserDetails;
 import com.qalens.tenant.TenantContext;
 import com.qalens.tenant.TenantFilter;
 import com.qalens.tenant.TenantResolver;

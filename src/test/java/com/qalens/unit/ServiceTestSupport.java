@@ -1,6 +1,6 @@
 package com.qalens.unit;
 
-import com.qalens.service.QalensUserDetails;
+import com.qalens.security.QalensUserDetails;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 

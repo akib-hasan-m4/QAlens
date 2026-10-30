@@ -3,7 +3,7 @@ package com.qalens.unit;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.qalens.domain.TestSuite;
-import com.qalens.service.SuiteForm;
+import com.qalens.service.testcase.SuiteForm;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;

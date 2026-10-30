@@ -2,9 +2,9 @@ package com.qalens.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.qalens.service.DraftInput;
-import com.qalens.service.DraftsForm;
-import com.qalens.service.StepInput;
+import com.qalens.service.ai.DraftInput;
+import com.qalens.service.ai.DraftsForm;
+import com.qalens.service.testcase.StepInput;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import java.util.ArrayList;

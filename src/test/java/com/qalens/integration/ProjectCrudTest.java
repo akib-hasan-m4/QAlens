@@ -14,7 +14,7 @@ import com.qalens.repository.OrganizationRepository;
 import com.qalens.repository.ProjectRepository;
 import com.qalens.repository.RoleRepository;
 import com.qalens.repository.UserProjectRoleRepository;
-import com.qalens.service.QalensUserDetails;
+import com.qalens.security.QalensUserDetails;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

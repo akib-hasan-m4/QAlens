@@ -6,8 +6,8 @@ import static org.mockito.Mockito.when;
 
 import com.qalens.domain.AiCallLog;
 import com.qalens.repository.AiCallLogRepository;
-import com.qalens.service.AiCallService;
-import com.qalens.service.AiCallView;
+import com.qalens.service.ai.AiCallService;
+import com.qalens.service.ai.AiCallView;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 

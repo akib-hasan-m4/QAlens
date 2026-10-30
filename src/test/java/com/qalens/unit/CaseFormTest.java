@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.qalens.domain.CasePriority;
 import com.qalens.domain.TestStep;
-import com.qalens.service.CaseForm;
-import com.qalens.service.StepInput;
+import com.qalens.service.testcase.CaseForm;
+import com.qalens.service.testcase.StepInput;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import java.util.ArrayList;

@@ -2,7 +2,7 @@ package com.qalens.tenant;
 
 import com.qalens.domain.Organization;
 import com.qalens.repository.OrganizationRepository;
-import com.qalens.service.QalensUserDetails;
+import com.qalens.security.QalensUserDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

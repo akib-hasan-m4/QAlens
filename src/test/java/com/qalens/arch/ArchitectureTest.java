@@ -29,8 +29,8 @@ class ArchitectureTest {
 
     @ArchTest
     static final ArchRule only_service_layer_calls_ai = noClasses()
-            .that().resideOutsideOfPackages("..service..", "..ai..", "..config..")
-            .should().dependOnClassesThat().resideInAPackage("..ai..")
+            .that().resideOutsideOfPackages("com.qalens.service..", "com.qalens.ai..", "com.qalens.config..")
+            .should().dependOnClassesThat().resideInAPackage("com.qalens.ai..")
             .allowEmptyShould(true);
 
     private static final Set<String> TENANT_SCOPED_REPOSITORIES = Set.of(

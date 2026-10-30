@@ -2,7 +2,7 @@ package com.qalens.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.qalens.service.ProjectKeys;
+import com.qalens.service.project.ProjectKeys;
 import org.junit.jupiter.api.Test;
 
 class ProjectKeysTest {

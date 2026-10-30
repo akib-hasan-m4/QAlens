@@ -10,7 +10,7 @@ import com.qalens.repository.OrganizationRepository;
 import com.qalens.repository.ProjectRepository;
 import com.qalens.repository.RoleRepository;
 import com.qalens.repository.UserProjectRoleRepository;
-import com.qalens.service.QalensUserDetails;
+import com.qalens.security.QalensUserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 /** Idempotent test data helpers; every call returns the existing row if it is already there. */

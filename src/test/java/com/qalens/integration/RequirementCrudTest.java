@@ -22,7 +22,7 @@ import com.qalens.repository.ProjectRepository;
 import com.qalens.repository.RequirementRepository;
 import com.qalens.repository.RoleRepository;
 import com.qalens.repository.UserProjectRoleRepository;
-import com.qalens.service.QalensUserDetails;
+import com.qalens.security.QalensUserDetails;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

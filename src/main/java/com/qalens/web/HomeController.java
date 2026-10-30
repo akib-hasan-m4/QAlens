@@ -1,6 +1,6 @@
 package com.qalens.web;
 
-import com.qalens.service.QalensUserDetails;
+import com.qalens.security.QalensUserDetails;
 import com.qalens.tenant.TenantContext;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;

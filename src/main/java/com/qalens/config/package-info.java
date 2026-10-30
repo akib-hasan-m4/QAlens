@@ -1,2 +1,2 @@
-/** Security, tenant, AI and web configuration. */
+/** Spring Security configuration. */
 package com.qalens.config;

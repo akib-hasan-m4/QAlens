@@ -2,7 +2,7 @@ package com.qalens.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.qalens.service.ProjectForm;
+import com.qalens.service.project.ProjectForm;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;

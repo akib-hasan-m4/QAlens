@@ -34,7 +34,7 @@ import com.qalens.repository.TestCaseRepository;
 import com.qalens.repository.TestCaseVersionRepository;
 import com.qalens.repository.TestSuiteRepository;
 import com.qalens.repository.UserProjectRoleRepository;
-import com.qalens.service.QalensUserDetails;
+import com.qalens.security.QalensUserDetails;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.BeforeEach;

@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.qalens.domain.RequirementPriority;
 import com.qalens.domain.RequirementStatus;
-import com.qalens.service.RequirementForm;
+import com.qalens.service.requirement.RequirementForm;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;

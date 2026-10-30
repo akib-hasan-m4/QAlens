@@ -1,2 +1,2 @@
-/** Business rules, authorization and the defect state machine. The only layer that calls AiClient. */
+/** Business rules and use cases, one sub-package per feature. With ai, the only code that calls AiClient. */
 package com.qalens.service;
