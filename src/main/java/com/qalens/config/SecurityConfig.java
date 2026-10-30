@@ -10,9 +10,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
@@ -31,7 +34,8 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http, TenantResolver tenantResolver,
-                                    OrganizationRepository organizations, TenantContext tenantContext) throws Exception {
+                                    OrganizationRepository organizations, TenantContext tenantContext,
+                                    SessionRegistry sessionRegistry) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login", "/css/**", "/js/**", "/error", "/actuator/health/**").permitAll()
@@ -49,7 +53,12 @@ public class SecurityConfig {
                         .invalidateHttpSession(true)
                         .deleteCookies(SESSION_COOKIE))
                 .addFilterBefore(new TenantFilter(tenantResolver, organizations, tenantContext), AuthorizationFilter.class)
-                .sessionManagement(sm -> sm.sessionFixation(fix -> fix.changeSessionId()))
+                .sessionManagement(sm -> sm
+                        .sessionFixation(fix -> fix.changeSessionId())
+                        // unlimited sessions per user, but tracked, so deactivating a user can end them
+                        .maximumSessions(-1)
+                        .sessionRegistry(sessionRegistry)
+                        .expiredUrl("/login?expired"))
                 .headers(h -> h
                         .contentSecurityPolicy(csp -> csp.policyDirectives(CSP))
                         .frameOptions(fo -> fo.deny())
@@ -65,6 +74,17 @@ public class SecurityConfig {
             delegate.setAlwaysUseDefaultTargetUrl(true);
             delegate.onAuthenticationSuccess(request, response, authentication);
         };
+    }
+
+    @Bean
+    SessionRegistry sessionRegistry() {
+        return new SessionRegistryImpl();
+    }
+
+    /** Tells the registry when a session ends (logout, timeout), so it does not keep dead entries. */
+    @Bean
+    HttpSessionEventPublisher httpSessionEventPublisher() {
+        return new HttpSessionEventPublisher();
     }
 
     @Bean

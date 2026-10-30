@@ -35,6 +35,9 @@ public class AppUser {
     @Column(name = "is_active", nullable = false)
     private boolean active = true;
 
+    @Column(name = "is_org_admin", nullable = false)
+    private boolean orgAdmin;
+
     @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
     private OffsetDateTime createdAt;
 
@@ -71,6 +74,19 @@ public class AppUser {
 
     public boolean isActive() {
         return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    /** Manages the organisation's users; unrelated to the per-project ADMIN role. */
+    public boolean isOrgAdmin() {
+        return orgAdmin;
+    }
+
+    public void setOrgAdmin(boolean orgAdmin) {
+        this.orgAdmin = orgAdmin;
     }
 
     public OffsetDateTime getCreatedAt() {

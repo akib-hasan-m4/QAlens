@@ -41,6 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
  * acme   SEC   admin=ADMIN only (everyone else has no role: 404)
  * globex GLB   admin@globex.test=ADMIN (another organisation: 404 for acme users)
  * </pre>
+ * admin@acme.test and admin@globex.test are also organisation admins (the Users page).
  * DEMO also gets a complete sample: requirements, nested suites, cases with version history and links.
  */
 @Component
@@ -81,6 +82,7 @@ public class DevDataSeeder implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         Organization acme = org("acme", "Acme Corp");
         AppUser admin = user(acme, "admin@acme.test", "Ada Admin", true);
+        admin.setOrgAdmin(true);
         AppUser lead = user(acme, "lead@acme.test", "Lena Lead", true);
         AppUser tester = user(acme, "tester@acme.test", "Tom Tester", true);
         AppUser dev = user(acme, "dev@acme.test", "Dan Developer", true);
@@ -100,6 +102,7 @@ public class DevDataSeeder implements ApplicationRunner {
 
         Organization globex = org("globex", "Globex Inc");
         AppUser globexAdmin = user(globex, "admin@globex.test", "Gus Globex", true);
+        globexAdmin.setOrgAdmin(true);
         Project glb = project(globex, "GLB", "Globex Project", "Belongs to another organisation.");
         grant(globexAdmin, glb, "ADMIN");
     }

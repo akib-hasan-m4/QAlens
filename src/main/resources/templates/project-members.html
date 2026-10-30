@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/base :: head('Members')}"></head>
+<body th:replace="~{layout/base :: shell(~{::main}, 'members')}">
+<main>
+    <div class="crumbs">
+        <a th:href="@{/o/{s}/projects/{id}(s=${slug},id=${project.id})}" th:text="${project.name}">Project</a> / Members
+    </div>
+    <h1>Members</h1>
+    <div class="sub">Who can see this project and what they may do. Only an ADMIN can grant ADMIN or change an ADMIN.</div>
+    <div class="alert ok" id="notice" th:if="${notice}" th:text="${notice}">Saved</div>
+    <div class="alert err" id="error" th:if="${error}" th:text="${error}">Not allowed</div>
+    <div class="card">
+        <table id="members">
+            <tr><th>Name</th><th>Email</th><th>Role</th><th>Actions</th></tr>
+            <tr th:each="m : ${view.members}">
+                <td><span th:text="${m.displayName}">Tom Tester</span>
+                    <span class="tag" th:if="${m.self}">(you)</span>
+                    <span class="badge skip" th:unless="${m.active}">Deactivated</span></td>
+                <td class="id" th:text="${m.email}">tom@acme.test</td>
+                <td><span class="badge info" th:text="${m.role}">TESTER</span></td>
+                <td>
+                    <div class="actions" th:if="${m.editable}">
+                        <form method="post"
+                              th:action="@{/o/{s}/projects/{p}/members/{u}(s=${slug},p=${project.id},u=${m.userId})}">
+                            <select name="role" th:attr="aria-label=${'Role for ' + m.displayName}">
+                                <option th:each="r : ${view.grantable}" th:value="${r}" th:text="${r}"
+                                        th:selected="${r == m.role}">TESTER</option>
+                            </select>
+                            <button class="btn s" type="submit">Change role</button>
+                        </form>
+                        <form method="post"
+                              th:action="@{/o/{s}/projects/{p}/members/{u}/remove(s=${slug},p=${project.id},u=${m.userId})}">
+                            <button class="btn s danger" type="submit">Remove</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="card">
+        <h3>Add a member</h3>
+        <p class="muted" th:if="${#lists.isEmpty(view.candidates)}">
+            Every active user in the organisation is already on this project.
+        </p>
+        <form class="narrow" method="post" th:unless="${#lists.isEmpty(view.candidates)}"
+              th:action="@{/o/{s}/projects/{p}/members(s=${slug},p=${project.id})}">
+            <div class="row-split">
+                <div class="field">
+                    <label for="userId">User</label>
+                    <select id="userId" name="userId" required>
+                        <option th:each="c : ${view.candidates}" th:value="${c.id}"
+                                th:text="${c.displayName + ' (' + c.email + ')'}">Tom Tester (tom@acme.test)</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="role">Role</label>
+                    <select id="role" name="role" required>
+                        <option th:each="r : ${view.grantable}" th:value="${r}" th:text="${r}"
+                                th:selected="${r == 'TESTER'}">TESTER</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn p" type="submit">Add member</button>
+        </form>
+    </div>
+</main>
+</body>
+</html>

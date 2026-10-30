@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/base :: head('Users')}"></head>
+<body th:replace="~{layout/base :: shell(~{::main}, 'users')}">
+<main>
+    <div class="crumbs" th:text="${shell.orgName}">Acme Corp</div>
+    <h1>Users</h1>
+    <div class="sub">Everyone in your organisation. Project roles are assigned on each project's Members page.</div>
+    <div class="alert ok" id="notice" th:if="${notice}" th:text="${notice}">Saved</div>
+    <div class="alert err" id="error" th:if="${error}" th:text="${error}">Not allowed</div>
+    <div class="card">
+        <table id="users">
+            <tr><th>Name</th><th>Email</th><th>Projects</th><th>Status</th><th>Actions</th></tr>
+            <tr th:each="u : ${users}">
+                <td><span th:text="${u.displayName}">Ada Admin</span>
+                    <span class="badge info" th:if="${u.orgAdmin}">Org admin</span>
+                    <span class="tag" th:if="${u.self}">(you)</span></td>
+                <td class="id" th:text="${u.email}">ada@acme.test</td>
+                <td class="id" th:text="${u.projectCount}">2</td>
+                <td><span class="badge" th:classappend="${u.active} ? 'pass' : 'skip'"
+                          th:text="${u.active} ? 'Active' : 'Deactivated'">Active</span></td>
+                <td>
+                    <div class="actions" th:unless="${u.self}">
+                        <form method="post" th:action="@{/o/{s}/admin/users/{id}/active(s=${slug},id=${u.id})}">
+                            <input type="hidden" name="active" th:value="${!u.active}">
+                            <button class="btn s" th:classappend="${u.active} ? 'danger'" type="submit"
+                                    th:text="${u.active} ? 'Deactivate' : 'Reactivate'">Deactivate</button>
+                        </form>
+                        <form method="post" th:action="@{/o/{s}/admin/users/{id}/org-admin(s=${slug},id=${u.id})}">
+                            <input type="hidden" name="orgAdmin" th:value="${!u.orgAdmin}">
+                            <button class="btn s" type="submit"
+                                    th:text="${u.orgAdmin} ? 'Remove org admin' : 'Make org admin'">Make org admin</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="card">
+        <h3>New user</h3>
+        <form class="narrow" method="post" th:action="@{/o/{s}/admin/users(s=${slug})}" th:object="${form}">
+            <div class="row2">
+                <div class="field">
+                    <label for="displayName">Name</label>
+                    <input class="input" id="displayName" type="text" th:field="*{displayName}" maxlength="200" required>
+                    <div class="alert err" th:if="${#fields.hasErrors('displayName')}" th:errors="*{displayName}">Invalid</div>
+                </div>
+                <div class="field">
+                    <label for="email">Email</label>
+                    <input class="input" id="email" type="email" th:field="*{email}" maxlength="255" autocomplete="off" required>
+                    <div class="alert err" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Invalid</div>
+                </div>
+            </div>
+            <div class="field">
+                <label for="password">Initial password</label>
+                <input class="input" id="password" type="password" name="password" minlength="10"
+                       autocomplete="new-password" required>
+                <div class="alert err" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Invalid</div>
+                <div class="alert err" th:if="${#fields.hasErrors('passwordWithinLimit')}" th:errors="*{passwordWithinLimit}">Too long</div>
+                <p class="muted">At least 10 characters. Give it to the user yourself; QAlens does not send email.</p>
+            </div>
+            <div class="field">
+                <label class="check"><input type="checkbox" th:field="*{orgAdmin}"> Organisation admin (can manage users)</label>
+            </div>
+            <button class="btn p" type="submit">Create user</button>
+        </form>
+    </div>
+</main>
+</body>
+</html>

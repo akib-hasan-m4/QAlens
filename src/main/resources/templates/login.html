@@ -9,6 +9,7 @@
         <p class="sub">Use your organisation account.</p>
         <div class="alert err" th:if="${param.error}">Invalid email or password.</div>
         <div class="alert ok" th:if="${param.logout}">You have been signed out.</div>
+        <div class="alert err" th:if="${param.expired}">Your session has ended. Sign in again.</div>
         <div class="field">
             <label for="email">Email</label>
             <input class="input" id="email" name="email" type="email" autocomplete="username" required autofocus>

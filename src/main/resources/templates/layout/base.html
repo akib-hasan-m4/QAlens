@@ -20,6 +20,8 @@
         <nav aria-label="Organisation">
             <a th:href="@{/o/{s}/projects(s=${shell.orgSlug})}"
                th:classappend="${section == 'projects'} ? 'on'">Projects</a>
+            <a th:if="${shell.orgAdmin}" th:href="@{/o/{s}/admin/users(s=${shell.orgSlug})}"
+               th:classappend="${section == 'users'} ? 'on'">Users</a>
         </nav>
         <th:block th:if="${shell.project != null}">
             <a class="proj" th:href="@{/o/{s}/projects/{id}(s=${shell.orgSlug},id=${shell.project.id})}">
@@ -43,6 +45,8 @@
                     <h6>Manage</h6>
                     <a th:href="@{/o/{s}/projects/{id}/settings(s=${shell.orgSlug},id=${shell.project.id})}"
                        th:classappend="${section == 'settings'} ? 'on'">Settings</a>
+                    <a th:href="@{/o/{s}/projects/{id}/members(s=${shell.orgSlug},id=${shell.project.id})}"
+                       th:classappend="${section == 'members'} ? 'on'">Members</a>
                 </th:block>
             </nav>
         </th:block>

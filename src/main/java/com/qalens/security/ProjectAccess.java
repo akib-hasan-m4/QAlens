@@ -19,10 +19,12 @@ public class ProjectAccess {
 
     private final ProjectRepository projects;
     private final UserProjectRoleRepository memberships;
+    private final OrgAccess orgAccess;
 
-    public ProjectAccess(ProjectRepository projects, UserProjectRoleRepository memberships) {
+    public ProjectAccess(ProjectRepository projects, UserProjectRoleRepository memberships, OrgAccess orgAccess) {
         this.projects = projects;
         this.memberships = memberships;
+        this.orgAccess = orgAccess;
     }
 
     public boolean hasRole(Long projectId, String... allowedRoles) {
@@ -33,12 +35,14 @@ public class ProjectAccess {
     }
 
     /**
-     * Roles are per project, so "may create a project" means holding ADMIN or QA_LEAD on any project of the
-     * caller's organisation. Insufficient rights answer 403: the caller is already inside their own organisation.
+     * Roles are per project, so "may create a project" means being an organisation admin or holding ADMIN or
+     * QA_LEAD on any project of the caller's organisation. Insufficient rights answer 403: the caller is already
+     * inside their own organisation.
      */
     public boolean canCreateProject() {
         QalensUserDetails user = currentUser();
-        return memberships.holdsRoleInOrg(user.getId(), user.getOrgId(), List.of("ADMIN", "QA_LEAD"));
+        return orgAccess.isAdmin()
+                || memberships.holdsRoleInOrg(user.getId(), user.getOrgId(), List.of("ADMIN", "QA_LEAD"));
     }
 
     public static QalensUserDetails currentUser() {

@@ -2,6 +2,7 @@ package com.qalens.web;
 
 import com.qalens.service.project.ProjectService;
 import com.qalens.service.project.ProjectView;
+import com.qalens.service.user.UserAdminService;
 import com.qalens.security.QalensUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -23,23 +24,26 @@ class ShellModelAdvice {
     private static final Pattern PROJECT_PATH = Pattern.compile("^/o/[^/]+/projects/(\\d{1,18})(?:/|$)");
 
     private final ProjectService projects;
+    private final UserAdminService users;
 
-    ShellModelAdvice(ProjectService projects) {
+    ShellModelAdvice(ProjectService projects, UserAdminService users) {
         this.projects = projects;
+        this.users = users;
     }
 
     @ModelAttribute("shell")
     Shell shell(HttpServletRequest request, @AuthenticationPrincipal QalensUserDetails user) {
         if (user == null) {
-            return new Shell(null, null, null, null);
+            return new Shell(null, null, null, false, null);
         }
         String path = request.getRequestURI().substring(request.getContextPath().length());
         Matcher m = PROJECT_PATH.matcher(path);
         ProjectView project = m.find() ? projects.view(Long.valueOf(m.group(1))) : null;
-        return new Shell(user.getDisplayName(), user.getOrgName(), user.getOrgSlug(), project);
+        return new Shell(user.getDisplayName(), user.getOrgName(), user.getOrgSlug(), users.mayManage(), project);
     }
 
-    public record Shell(String userName, String orgName, String orgSlug, ProjectView project) {
+    /** {@code orgAdmin} only decides whether the Users link is shown; the admin pages enforce it. */
+    public record Shell(String userName, String orgName, String orgSlug, boolean orgAdmin, ProjectView project) {
 
         public String initials() {
             if (userName == null || userName.isBlank()) {

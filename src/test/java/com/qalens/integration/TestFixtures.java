@@ -47,6 +47,11 @@ class TestFixtures {
                 .orElseGet(() -> projects.save(new Project(org, key, key + " project", "desc")));
     }
 
+    AppUser orgAdmin(AppUser user) {
+        user.setOrgAdmin(true);
+        return users.save(user);
+    }
+
     void grant(AppUser user, Project project, String roleName) {
         if (!memberships.existsById(new UserProjectRoleId(user.getId(), project.getId()))) {
             memberships.save(new UserProjectRole(user.getId(), project.getId(), roles.findByName(roleName).orElseThrow()));

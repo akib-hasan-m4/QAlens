@@ -1,2 +1,2 @@
-/** Project creation, editing, archiving and key generation. */
+/** Project creation, editing, archiving, key generation and membership. */
 package com.qalens.service.project;
